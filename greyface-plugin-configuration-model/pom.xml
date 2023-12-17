@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License along w
         <major>1</major>
         <minor>0</minor>
         <nextMinor>1</nextMinor>
-        <revision>1-pc</revision>
+        <revision>1</revision>
         <archetype>model</archetype>
 	    <V.com.braintribe.devrock>[1.0,1.1)</V.com.braintribe.devrock>
         <V.com.braintribe.gm>[1.0,1.1)</V.com.braintribe.gm>
