@@ -27,24 +27,12 @@ import com.braintribe.cfg.Configurable;
  * @author pit
  *
  */
-public class BooleanEditor {
+public class BooleanEditor extends AbstractEditor<Boolean> {
 	private boolean startValue;
 	private boolean startEnabled = true;
 	private Button check;
-	
-	private String labelToolTip;
-	private String checkToolTip;
+		
 	private SelectionListener selectionListener;
-	
-	@Configurable
-	public void setLabelToolTip(String labelToolTip) {
-		this.labelToolTip = labelToolTip;
-	}
-
-	@Configurable
-	public void setCheckToolTip(String checkToolTip) {
-		this.checkToolTip = checkToolTip;
-	}
 	
 	@Configurable
 	public void setSelectionListener(SelectionListener selectionListener) {
@@ -67,8 +55,8 @@ public class BooleanEditor {
 		check.setLayoutData( new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		check.setSelection(startValue);
 		check.setEnabled(startEnabled);
-		if (checkToolTip != null) {
-			check.setToolTipText(checkToolTip);
+		if (editToolTip != null) {
+			check.setToolTipText(editToolTip);
 		}
 		if (selectionListener != null) {
 			check.addSelectionListener(selectionListener);
@@ -81,7 +69,7 @@ public class BooleanEditor {
 		return check.getSelection();
 	}
 	
-	public void setSelection( boolean selection){
+	public void setSelection( Boolean selection){
 		if (check == null) {
 			startValue = selection;
 		} else {

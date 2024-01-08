@@ -46,7 +46,9 @@ import com.braintribe.devrock.mc.api.commons.VersionInfo;
 import com.braintribe.devrock.mc.api.repository.configuration.ArtifactChangesSynchronization;
 import com.braintribe.devrock.mc.api.repository.configuration.RepositoryReflection;
 import com.braintribe.devrock.mc.api.resolver.ArtifactDataResolution;
+import com.braintribe.devrock.model.repository.ChangesIndexType;
 import com.braintribe.devrock.model.repository.MavenFileSystemRepository;
+import com.braintribe.devrock.model.repository.MavenHttpRepository;
 import com.braintribe.devrock.model.repository.Repository;
 import com.braintribe.devrock.model.repository.RepositoryConfiguration;
 import com.braintribe.devrock.plugin.DevrockPlugin;
@@ -240,13 +242,25 @@ public class InternalMcBridge implements McBridge {
 		// pre-filter to remove duplicates.. 
 		Map<String, Repository> repositoriesToUseMap = new HashMap<>();
 		for (Repository repository : repositoryConfiguration.getRepositories()) {
-			String changesUrl = repository.getChangesUrl();
-			// no changesUrl, no dice (only remotes with RH support remain
-			if (changesUrl == null)
+			if (repository instanceof MavenHttpRepository == false) {
 				continue;
+			}
+			ChangesIndexType changesIndexType = repository.getChangesIndexType();
+			String distinctKey = null;
+			switch (changesIndexType) {
+				case incremental:
+					MavenHttpRepository mrepository = (MavenHttpRepository) repository;
+					distinctKey = mrepository.getUrl();
+					break;
+				case total:
+					distinctKey = repository.getChangesUrl();					
+					break;
+				default:
+					break;			
+			}
 			// no duplicates (maven based cfg may bring-in to mirrors for 'central' 
-			if (!repositoriesToUseMap.containsKey( changesUrl)) {
-				repositoriesToUseMap.put( changesUrl, repository);
+			if (!repositoriesToUseMap.containsKey( distinctKey)) {
+				repositoriesToUseMap.put( distinctKey, repository);
 			}
 			else {
 				/* nothing */; 

@@ -294,11 +294,11 @@ public class DependencyAnalysisViewer implements IMenuListener, IDisposable, Sel
 	
 	private void toggleButtonMenu(boolean activate) {
 		dependencyManipulationButtons.stream().forEach( b -> b.setEnabled( activate));
-		insertDependenciesOptionsEditor.setEnable(activate);
+		insertDependenciesOptionsEditor.setEnabled(activate);
 	}
 	private void toggleInsertionButtonMenu(boolean activate) {
 		dependencyInsertionButtons.stream().forEach( b -> b.setEnabled( activate));
-		insertDependenciesOptionsEditor.setEnable(activate);
+		insertDependenciesOptionsEditor.setEnabled(activate);
 	}
 	private void toggleDeletionButtonMenu(boolean activate) {
 		dependencyDeletionButtons.stream().forEach( b -> b.setEnabled( activate));		

@@ -39,7 +39,7 @@ import com.braintribe.devrock.api.ve.listeners.VirtualEnvironmentNotificationLis
  * @author pit
  *
  */
-public class DirectoryEditor extends AbstractEditor implements ModifyListener, VirtualEnvironmentNotificationListener {
+public class DirectoryEditor extends AbstractEditor<String> implements ModifyListener, VirtualEnvironmentNotificationListener {
 	
 	private Shell shell;
 	private String start;
@@ -168,6 +168,13 @@ public class DirectoryEditor extends AbstractEditor implements ModifyListener, V
 	public Widget getWidget() {
 		return text;
 	}
+
+	@Override
+	public void setEnabled(boolean value) {
+		text.setEnabled(value);
+		scanButton.setEnabled(value);		
+	}
+	
 	
 
 }

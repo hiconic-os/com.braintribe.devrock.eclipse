@@ -33,7 +33,7 @@ import com.braintribe.cfg.Required;
  *
  * @param <T> - the Enum you want to have edited 
  */
-public class EnumEditor<T extends Enum<T>> {
+public class EnumEditor<T extends Enum<T>> extends AbstractEditor<T> {
 
 	private Map<String, T> choicesMap = new HashMap<>();
 	private Map<T, String> toolTipMap = new HashMap<>();
@@ -124,10 +124,13 @@ public class EnumEditor<T extends Enum<T>> {
 		return composite;
 	}
 	@Configurable
-	public void setEnable( boolean enable){
+	public void setEnabled( boolean enable){
 		if (label != null) {
 			label.setEnabled(enable);
 		}
 		radios.values().stream().forEach( r -> r.setEnabled(enable));
 	}
+
+	
+	
 }

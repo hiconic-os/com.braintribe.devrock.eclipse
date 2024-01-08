@@ -169,7 +169,7 @@ public class WorkspaceImportSelectionDialog extends DevrockDialog {
         // a) hide 'intrinsic working sets
         toggleIntrinsicWorkingSets = new BooleanEditor();
         toggleIntrinsicWorkingSets.setLabelToolTip("Whether the intrinsic workingsets 'Java Main Sources' and 'Java Test Sources' are shown");
-        toggleIntrinsicWorkingSets.setCheckToolTip("If active the intrinsic workingsets 'Java Main Sources' and 'Java Test Sources' are shown, otherwise they're filtered");
+        toggleIntrinsicWorkingSets.setEditToolTip("If active the intrinsic workingsets 'Java Main Sources' and 'Java Test Sources' are shown, otherwise they're filtered");
         toggleIntrinsicWorkingSets.setSelectionListener( new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent e) {
@@ -190,7 +190,7 @@ public class WorkspaceImportSelectionDialog extends DevrockDialog {
         // b) show/hide working sets
         toggleWorkingSets = new BooleanEditor();
         toggleWorkingSets.setLabelToolTip("Whether existing workingsets are show at all");
-        toggleWorkingSets.setCheckToolTip("If active, the workingsets are shown, otherwise only standard projects are shown");
+        toggleWorkingSets.setEditToolTip("If active, the workingsets are shown, otherwise only standard projects are shown");
         toggleWorkingSets.setSelectionListener( new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent e) {
@@ -219,7 +219,7 @@ public class WorkspaceImportSelectionDialog extends DevrockDialog {
         // c) show only projects outside working sets that do not belong to one (other than the intrinsic)
         toggleDuplicatesFromWorkingSets = new BooleanEditor();
         toggleDuplicatesFromWorkingSets.setLabelToolTip("Whether to show projects as standalone if they are already part of a workingset");
-        toggleDuplicatesFromWorkingSets.setCheckToolTip("If active, duplicate projects are filtered");
+        toggleDuplicatesFromWorkingSets.setEditToolTip("If active, duplicate projects are filtered");
         toggleDuplicatesFromWorkingSets.setSelectionListener( new SelectionAdapter() {
         	@Override
         	public void widgetSelected(SelectionEvent e) {

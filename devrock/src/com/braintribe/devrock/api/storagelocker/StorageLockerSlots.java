@@ -46,6 +46,7 @@ public interface StorageLockerSlots {
 	String SLOT_AC_REQUIRE_HIGHER_VERSION = "strict-project-version-lower-boundary";
 	String SLOT_AC_USE_STANDARD_CONFIGURATION = "ac-use-custom-configuration-for-analyis";
 	String SLOT_AC_CUSTOM_CONFIGURATION = "ac-custom-configuration-for-analyis";
+	String SLOT_AC_IGNORE_ECLIPSE = "ac-ignore-eclipse-projects-in-resolution";
 	
 	// Resolution viewer
 	String SLOT_ARTIFACT_VIEWER_TC_MAP_KEY = "artifact-viewer-context-map";
@@ -91,11 +92,15 @@ public interface StorageLockerSlots {
 	String SLOT_MB_SUCCESS_MESSAGES ="mb-success-messages-enabled";
 	
 	// TB runner
-	String SLOT_TBR_TRANSITIVE = "tbr-transitive-run";	
-	String SLOT_TBR_STANDARD_BUILDFILE = "tb-runner-use-standard-build";
+	String SLOT_TBR_TRANSITIVE = "tbr-transitive-run";		
+	
+	String SLOT_TBR_STANDARD_BUILDFILE_ASSOCIATION = "tb-runner-standard-associations";  // should be standard-buildfile 
 	String SLOT_TBR_CUSTOM_BUILDFILE = "tb-runner-custom-build";
 	String SLOT_TBR_CUSTOM_BUILDFILE_ASSOCIATION = "tb-runner-custom-associations";
-	String SLOT_TBR_STANDARD_ASSOCIATION = "tb-runner-standard-associations";
+	
+	String SLOT_TBR_STANDARD_TARGET = "install";
+	String SLOT_TBR_STANDARD_TARGET_ASSOCIATION = "tb-runner-standard-target-associations";
+	String SLOT_TBR_CUSTOM_TARGET_ASSOCIATION = "tb-runner-custom-target-associations";
 
 	// zed
 	String SLOT_ZED_VIEWER_LAST_FILE = "zed-viewer-last-selected-file";

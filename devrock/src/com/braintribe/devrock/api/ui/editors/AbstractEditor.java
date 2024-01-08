@@ -14,10 +14,14 @@ package com.braintribe.devrock.api.ui.editors;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Composite;
+
+import com.braintribe.cfg.Configurable;
 import com.braintribe.devrock.api.ui.listeners.ModificationNotificationBroadcaster;
 import com.braintribe.devrock.api.ui.listeners.ModificationNotificationListener;
 
-public class AbstractEditor implements ModificationNotificationBroadcaster{
+public abstract class AbstractEditor<T> implements ModificationNotificationBroadcaster, ModificationNotificationListener {
 	protected Set<ModificationNotificationListener> listeners = new HashSet<ModificationNotificationListener>();
 
 	@Override
@@ -36,5 +40,31 @@ public class AbstractEditor implements ModificationNotificationBroadcaster{
 		}		
 	}
 	
+	protected String labelToolTip;
+	protected String editToolTip;
+	
+	@Configurable
+	public void setLabelToolTip(String labelToolTip) {
+		this.labelToolTip = labelToolTip;
+	}
 
+	@Configurable
+	public void setEditToolTip(String checkToolTip) {
+		this.editToolTip = checkToolTip;
+	}
+
+	protected T value;
+	
+	public abstract T getSelection();
+	public abstract void setSelection(T value);
+	
+	public abstract void setEnabled(boolean value);
+	public boolean getEnabled() {return true;}
+	
+	public Composite createControl( Composite parent, String tag) {return null;}
+	public Composite createControl( Composite parent, String tag, Font font) {return null;}
+
+	@Override
+	public void acknowledgeChange(Object sender, String value) {}
+	
 }

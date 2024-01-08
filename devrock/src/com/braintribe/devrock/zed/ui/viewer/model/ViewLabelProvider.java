@@ -40,9 +40,11 @@ import com.braintribe.devrock.zarathud.model.common.Node;
 import com.braintribe.devrock.zarathud.model.model.EnumEntityNode;
 import com.braintribe.devrock.zarathud.model.model.GenericEntityNode;
 import com.braintribe.devrock.zarathud.model.model.PropertyNode;
+import com.braintribe.devrock.zed.forensics.fingerprint.HasFingerPrintTokens;
+import com.braintribe.devrock.zed.ui.ZedViewingContext;
 import com.braintribe.utils.lcd.LazyInitialized;
 
-public class ViewLabelProvider extends CellLabelProvider implements IStyledLabelProvider {
+public class ViewLabelProvider extends CellLabelProvider implements IStyledLabelProvider, HasFingerPrintTokens {
 	private static final String PROPERTY_TO_TYPE_DELEMITER = " \u21E2 ";
 
 	private static final String STYLER_STANDARD = "standard";
@@ -84,6 +86,8 @@ public class ViewLabelProvider extends CellLabelProvider implements IStyledLabel
 	private Image fingerPrintPassed;
 	private Image fingerPrintInfo;
 	
+	private ZedViewingContext context;
+	
 	private boolean showUnicodePrefixes = false;
 	private StyledTextHandler styledStringStyler;
 	{
@@ -92,6 +96,11 @@ public class ViewLabelProvider extends CellLabelProvider implements IStyledLabel
 		styledStringStyler.setDelimiterStyleSupplier( () -> STYLER_STANDARD);
 	}
 	
+	public ViewLabelProvider(ZedViewingContext context) {
+		this.context = context;
+		
+	}
+
 	@Configurable
 	public void setUiSupport(UiSupport uiSupport) {
 		this.uiSupport = uiSupport;					
@@ -292,7 +301,9 @@ public class ViewLabelProvider extends CellLabelProvider implements IStyledLabel
 		else if (element instanceof FingerPrintCoalescedNode) {
 			FingerPrintCoalescedNode fpcn = (FingerPrintCoalescedNode) element;
 			FingerPrintRating overallRating = fpcn.getWorstFingerPrintRating();
-			String text = "Issue " + fpcn.getMessage() + " is currently rated as :" + overallRating.name();
+			String issue = fpcn.getMessage();
+			String tip = context.getRatingRegistry().getTip(issue);
+			String text = tip + "\n" + "Issue '" + fpcn.getMessage() + "' is currently rated as :" + overallRating.name();
 			return text;
 		}
 		else if (element instanceof EntityNode) {
@@ -300,6 +311,13 @@ public class ViewLabelProvider extends CellLabelProvider implements IStyledLabel
 			List<Node> children = en.getChildren();
 			String text = "analysis has found (" + children.size() + ") classes of issues for : " + en.getName();
 			return text;
+		}
+		else if (element instanceof FingerPrintNode) { 
+			FingerPrintNode fpn = (FingerPrintNode) element;
+			String tip = context.getRatingRegistry().getTip( fpn.getFingerPrint());
+			if (tip != null) {
+				return tip;
+			}			
 		}
 	 	
 		return super.getToolTipText(element);

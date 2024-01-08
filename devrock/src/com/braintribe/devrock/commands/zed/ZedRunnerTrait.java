@@ -470,103 +470,103 @@ public interface ZedRunnerTrait {
 	 */
 	public static Maybe<ClassesProcessingRunnerContext> produceContext(CompiledTerminal compiledTerminal, McBridge mcBridge) {
 		// must get the declared dependencies 
-				if (compiledTerminal instanceof CompiledDependency == false) {
-					String msg = "CompiledTerminal [" + compiledTerminal.asString() + "] cannot be processed as it's not based on a compiled dependency as required";
-					log.error(msg);
-					DevrockPluginStatus status = new DevrockPluginStatus(msg, IStatus.ERROR);
-					DevrockPlugin.instance().log(status);
-					if (mcBridge != null) {
-						mcBridge.close();
-					}
-					return Maybe.empty( Reasons.build( InvalidArtifactIdentification.T).text( msg).toReason());
-				}
-				
-				// find the matching CAI 
-				CompiledDependency cd = (CompiledDependency) compiledTerminal;
-				Maybe<CompiledArtifactIdentification> caiMaybe = mcBridge.resolve(cd);
-				
-				if (caiMaybe.isUnsatisfied()) {
-					String msg = "Dependency [" + compiledTerminal.asString() + "] cannot be resolved to a concrete artifact identification";
-					log.error(msg + "as " + caiMaybe.whyUnsatisfied().stringify());
-					DevrockPluginStatus status = new DevrockPluginStatus(msg, (Reason) caiMaybe.whyUnsatisfied());
-					DevrockPlugin.instance().log(status);
-					if (mcBridge != null) {
-						mcBridge.close();
-					}
-					return Maybe.empty( TemplateReasons.build( UnresolvedDependency.T).enrich( r -> r.setDependency(cd)).toReason());
-				}
-				
-				CompiledArtifactIdentification cai = caiMaybe.get();		
-				// resolve the CA
-				Maybe<CompiledArtifact> caMaybe = mcBridge.resolve( cai);
-				if (caMaybe.isUnsatisfied()) {
-					String msg = "Artifact [" + cai.asString() + "] cannot be resolved to a concrete artifact";
-					log.error(msg + "as " + caMaybe.whyUnsatisfied().stringify());
-					DevrockPluginStatus status = new DevrockPluginStatus(msg, (Reason) caMaybe.whyUnsatisfied());
-					DevrockPlugin.instance().log(status);
-					if (mcBridge != null) {
-						mcBridge.close();
-					}
-					return Maybe.empty( TemplateReasons.build( UnresolvedArtifact.T).enrich( r -> r.setArtifact(cai)).toReason());
-				}
-				
-				// get the dependencies 
-				CompiledArtifact ca = caMaybe.get();
-				List<AnalysisDependency> terminalDependencies = ca.getDependencies().stream().map( c -> AnalysisDependency.from(c)).collect( Collectors.toList());
-				
-				
-				// run resolution 
-				Maybe<AnalysisArtifactResolution> resolutionMaybe = mcBridge.resolveClasspath( compiledTerminal, ClasspathResolutionScope.compile);
-				if (resolutionMaybe.isUnsatisfied()) {
-					String msg = "Project [" + compiledTerminal.asString() + "] cannot be processed";
-					log.error(msg + "as " + resolutionMaybe.whyUnsatisfied().stringify());
-					DevrockPluginStatus status = new DevrockPluginStatus(msg, (Reason) resolutionMaybe.whyUnsatisfied());
-					DevrockPlugin.instance().log(status);
-					if (mcBridge != null) {
-						mcBridge.close();
-					}
-					return resolutionMaybe.cast();
-				}
-				
-				
+		if (compiledTerminal instanceof CompiledDependency == false) {
+			String msg = "CompiledTerminal [" + compiledTerminal.asString() + "] cannot be processed as it's not based on a compiled dependency as required";
+			log.error(msg);
+			DevrockPluginStatus status = new DevrockPluginStatus(msg, IStatus.ERROR);
+			DevrockPlugin.instance().log(status);
+			if (mcBridge != null) {
 				mcBridge.close();
-				
-				
-				AnalysisArtifactResolution aar = resolutionMaybe.get();
-				AnalysisTerminal analysisTerminal = aar.getTerminals().get(0);
-				
-				ClassesProcessingRunnerContext cprContext = ClassesProcessingRunnerContext.T.create();
-				
-				cprContext.setTerminal( analysisTerminal.asString());
-				cprContext.setClasspath( aar.getSolutions());
-				cprContext.setConsoleOutputVerbosity(ConsoleOutputVerbosity.silent);
-				cprContext.setDependencies( terminalDependencies);
-				
-				// custom finger print ratings		
-				if (DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ZED_FP_OVERRIDE_RATINGS, false)) {
-					String customFingerPrintFile = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ZED_FP_CUSTOM_FILE, null);
-					if (customFingerPrintFile != null) {
-						File file = new File(customFingerPrintFile);
-						if (file.exists()) {
-							FileResource fileResource  = FileResource.T.create();
-							fileResource.setPath( file.getAbsolutePath());
-							cprContext.setCustomRatingsResource(fileResource);
-						}
-					}
+			}
+			return Maybe.empty( Reasons.build( InvalidArtifactIdentification.T).text( msg).toReason());
+		}
+		
+		// find the matching CAI 
+		CompiledDependency cd = (CompiledDependency) compiledTerminal;
+		Maybe<CompiledArtifactIdentification> caiMaybe = mcBridge.resolve(cd);
+		
+		if (caiMaybe.isUnsatisfied()) {
+			String msg = "Dependency [" + compiledTerminal.asString() + "] cannot be resolved to a concrete artifact identification";
+			log.error(msg + "as " + caiMaybe.whyUnsatisfied().stringify());
+			DevrockPluginStatus status = new DevrockPluginStatus(msg, (Reason) caiMaybe.whyUnsatisfied());
+			DevrockPlugin.instance().log(status);
+			if (mcBridge != null) {
+				mcBridge.close();
+			}
+			return Maybe.empty( TemplateReasons.build( UnresolvedDependency.T).enrich( r -> r.setDependency(cd)).toReason());
+		}
+		
+		CompiledArtifactIdentification cai = caiMaybe.get();		
+		// resolve the CA
+		Maybe<CompiledArtifact> caMaybe = mcBridge.resolve( cai);
+		if (caMaybe.isUnsatisfied()) {
+			String msg = "Artifact [" + cai.asString() + "] cannot be resolved to a concrete artifact";
+			log.error(msg + "as " + caMaybe.whyUnsatisfied().stringify());
+			DevrockPluginStatus status = new DevrockPluginStatus(msg, (Reason) caMaybe.whyUnsatisfied());
+			DevrockPlugin.instance().log(status);
+			if (mcBridge != null) {
+				mcBridge.close();
+			}
+			return Maybe.empty( TemplateReasons.build( UnresolvedArtifact.T).enrich( r -> r.setArtifact(cai)).toReason());
+		}
+		
+		// get the dependencies 
+		CompiledArtifact ca = caMaybe.get();
+		List<AnalysisDependency> terminalDependencies = ca.getDependencies().stream().map( c -> AnalysisDependency.from(c)).collect( Collectors.toList());
+		
+		
+		// run resolution 
+		Maybe<AnalysisArtifactResolution> resolutionMaybe = mcBridge.resolveClasspath( compiledTerminal, ClasspathResolutionScope.compile);
+		if (resolutionMaybe.isUnsatisfied()) {
+			String msg = "Project [" + compiledTerminal.asString() + "] cannot be processed";
+			log.error(msg + "as " + resolutionMaybe.whyUnsatisfied().stringify());
+			DevrockPluginStatus status = new DevrockPluginStatus(msg, (Reason) resolutionMaybe.whyUnsatisfied());
+			DevrockPlugin.instance().log(status);
+			if (mcBridge != null) {
+				mcBridge.close();
+			}
+			return resolutionMaybe.cast();
+		}
+		
+		
+		mcBridge.close();
+		
+		
+		AnalysisArtifactResolution aar = resolutionMaybe.get();
+		AnalysisTerminal analysisTerminal = aar.getTerminals().get(0);
+		
+		ClassesProcessingRunnerContext cprContext = ClassesProcessingRunnerContext.T.create();
+		
+		cprContext.setTerminal( analysisTerminal.asString());
+		cprContext.setClasspath( aar.getSolutions());
+		cprContext.setConsoleOutputVerbosity(ConsoleOutputVerbosity.silent);
+		cprContext.setDependencies( terminalDependencies);
+		
+		// custom finger print ratings		
+		if (DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ZED_FP_OVERRIDE_RATINGS, false)) {
+			String customFingerPrintFile = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ZED_FP_CUSTOM_FILE, null);
+			if (customFingerPrintFile != null) {
+				File file = new File(customFingerPrintFile);
+				if (file.exists()) {
+					FileResource fileResource  = FileResource.T.create();
+					fileResource.setPath( file.getAbsolutePath());
+					cprContext.setCustomRatingsResource(fileResource);
 				}
-				
-				// finger print ratings attached to artifact  
-				CompiledPartIdentification cpi = CompiledPartIdentification.from(cai, PartIdentification.create("fps"));
-				Maybe<File> fingerPrintOverridePartMaybe = mcBridge.resolve(cpi);	
-				if (fingerPrintOverridePartMaybe.isSatisfied()) {
-					File file = fingerPrintOverridePartMaybe.get();
-					if (file.exists()) {
-						FileResource fileResource  = FileResource.T.create();
-						fileResource.setPath( file.getAbsolutePath());
-						cprContext.setPullRequestRatingsResource(fileResource);
-					}
-				}
-				return Maybe.complete(cprContext);
+			}
+		}
+		
+		// finger print ratings attached to artifact  
+		CompiledPartIdentification cpi = CompiledPartIdentification.from(cai, PartIdentification.create("fps"));
+		Maybe<File> fingerPrintOverridePartMaybe = mcBridge.resolve(cpi);	
+		if (fingerPrintOverridePartMaybe.isSatisfied()) {
+			File file = fingerPrintOverridePartMaybe.get();
+			if (file.exists()) {
+				FileResource fileResource  = FileResource.T.create();
+				fileResource.setPath( file.getAbsolutePath());
+				cprContext.setPullRequestRatingsResource(fileResource);
+			}
+		}
+		return Maybe.complete(cprContext);
 	}
 
 }

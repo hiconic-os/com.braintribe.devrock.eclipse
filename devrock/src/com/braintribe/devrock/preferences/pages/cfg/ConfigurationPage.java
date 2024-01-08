@@ -92,7 +92,7 @@ public class ConfigurationPage extends PreferencePage implements IWorkbenchPrefe
 			// offline global
 			BooleanEditor globallyOffline = new BooleanEditor();
 			globallyOffline.setLabelToolTip("Whether the configuration is globally set to be offline");
-			globallyOffline.setCheckToolTip("If checked, the configuration is offline. Otherwise, the state of the repositories is dynamically checked");
+			globallyOffline.setEditToolTip("If checked, the configuration is offline. Otherwise, the state of the repositories is dynamically checked");
 			Composite offlineComposite = globallyOffline.createControl( dataComposite, "globally offline");
 			globallyOffline.setEnabled(false);
 			globallyOffline.setSelection( repositoryConfiguration.getOffline());

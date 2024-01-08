@@ -31,7 +31,9 @@ import com.braintribe.devrock.api.ui.listeners.ModificationNotificationListener;
 import com.braintribe.devrock.plugin.DevrockPlugin;
 
 public class CustomRepositoryConfigurationSelector {
-	private BooleanEditor useStandardConfiguration;
+	private BooleanEditor useStandardConfigurationEditor;
+	private BooleanEditor ignoreEclipsePopulationEditor;
+	
 	private FileEditor customConfiguration;	
 	private Shell shell;
 	private UiSupport uisSupport;
@@ -39,6 +41,7 @@ public class CustomRepositoryConfigurationSelector {
 	
 	private String currentlySelectedCustomConfiguration;
 	private boolean currentlySelectedUsageOfStandadConfiguration;
+	private boolean ignoreEclipsePopulation;
 	
 	@Configurable @Required
 	public void setBigFont(Font bigFont) {
@@ -68,14 +71,39 @@ public class CustomRepositoryConfigurationSelector {
         respositorySelectionLabel.setText("repository configuration");
         respositorySelectionLabel.setFont(bigFont);
         
+    	ignoreEclipsePopulationEditor = new BooleanEditor();
+		ignoreEclipsePopulationEditor.setSelectionListener( new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (ignoreEclipsePopulationEditor.getSelection()) {        
+					ignoreEclipsePopulation = true;
+				}
+				else {        		
+					ignoreEclipsePopulation = false;
+				}
+				// write back
+				DevrockPlugin.envBridge().storageLocker().setValue( StorageLockerSlots.SLOT_AC_IGNORE_ECLIPSE, ignoreEclipsePopulation);
+				super.widgetSelected(e);
+			}        	
+		});
+		ignoreEclipsePopulationEditor.setLabelToolTip("Allows the choice of in- or excluding Eclipse projects in the resolution");
+		ignoreEclipsePopulationEditor.setEditToolTip( "If checked, the currently active configuration ignores the workspace, else the Eclipse projects are included");
+		Composite control = ignoreEclipsePopulationEditor.createControl(composite, "ignore Eclipse projects");		
+		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		
+		boolean ignoreEclipseValue = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AC_IGNORE_ECLIPSE, false);		
+		ignoreEclipsePopulationEditor.setSelection( ignoreEclipseValue);
+		ignoreEclipsePopulation = ignoreEclipseValue;
+        
         respositorySelectionLabel.setLayoutData( new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
         
-        useStandardConfiguration = new BooleanEditor();
-        useStandardConfiguration.setSelectionListener( new SelectionAdapter() {
+        useStandardConfigurationEditor = new BooleanEditor();
+        useStandardConfigurationEditor.setSelectionListener( new SelectionAdapter() {
         	
         	@Override
         	public void widgetSelected(SelectionEvent e) {
-        		if (useStandardConfiguration.getSelection()) {
+        		if (useStandardConfigurationEditor.getSelection()) {
         			customConfiguration.setEnabled(false);
         			currentlySelectedUsageOfStandadConfiguration = true;
         		}
@@ -87,19 +115,22 @@ public class CustomRepositoryConfigurationSelector {
         	}        	
         });
 
-        useStandardConfiguration.setLabelToolTip("Allows the choice of using the standard or custom repository configuration for the analysis");
-        useStandardConfiguration.setCheckToolTip( "If checked, the currently active configuration is used, else the specified custom configuration is used");
-		Composite control = useStandardConfiguration.createControl(composite, "use standard configuration");		
+        useStandardConfigurationEditor.setLabelToolTip("Allows the choice of using the standard or custom repository configuration for the analysis");
+        useStandardConfigurationEditor.setEditToolTip( "If checked, the currently active configuration is used, else the specified custom configuration is used");
+		control = useStandardConfigurationEditor.createControl(composite, "use standard configuration");		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		
-		boolean useStandardConfigurationValue = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AC_USE_STANDARD_CONFIGURATION, true);		
-		useStandardConfiguration.setSelection( useStandardConfigurationValue);
 		
+		
+		boolean useStandardConfigurationValue = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AC_USE_STANDARD_CONFIGURATION, true);		
+		useStandardConfigurationEditor.setSelection( useStandardConfigurationValue);
+		
+
 		
 		customConfiguration = new FileEditor( shell);
 		customConfiguration.setExtensions( new String[] {"*.yaml"});
 		customConfiguration.setLabelToolTip("The custom repository configuration to be used");
-		customConfiguration.setCheckToolTip( "Selects a peristed repository configuration (yaml)");		
+		customConfiguration.setEditToolTip( "Selects a peristed repository configuration (yaml)");		
 		control = customConfiguration.createControl(composite, "use alternative configuration");		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		String customConfigurationValue = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AC_CUSTOM_CONFIGURATION, null);
@@ -129,6 +160,10 @@ public class CustomRepositoryConfigurationSelector {
 
 	public boolean getCurrentlySelectedUsageOfStandadConfiguration() {
 		return currentlySelectedUsageOfStandadConfiguration;
+	}
+	
+	public boolean getIgnoreEclipsePopulation() {
+		return ignoreEclipsePopulation;
 	}
 
 

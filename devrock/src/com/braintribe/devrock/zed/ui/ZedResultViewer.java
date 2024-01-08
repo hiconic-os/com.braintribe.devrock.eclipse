@@ -63,7 +63,7 @@ import com.braintribe.zarathud.model.forensics.ModelForensicsResult;
 import com.braintribe.zarathud.model.forensics.ModuleForensicsResult;
 
 public class ZedResultViewer extends DevrockDialog implements IDisposable {
-	private static final int SHELL_STYLE = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL;
+	private static final int SHELL_STYLE = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MODELESS;
 	private ZedViewingContext context;
 	private CTabFolder tabFolder;
 	private final UiSupport uiSupport = DevrockPlugin.instance().uiSupport();

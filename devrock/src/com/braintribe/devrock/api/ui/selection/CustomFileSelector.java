@@ -27,13 +27,15 @@ import com.braintribe.cfg.Configurable;
 import com.braintribe.cfg.Required;
 import com.braintribe.devrock.api.ui.editors.BooleanEditor;
 import com.braintribe.devrock.api.ui.editors.FileEditor;
+import com.braintribe.devrock.api.ui.editors.StringEditor;
 import com.braintribe.devrock.api.ui.listeners.ModificationNotificationListener;
 import com.braintribe.devrock.eclipse.model.identification.EnhancedCompiledArtifactIdentification;
 import com.braintribe.devrock.plugin.DevrockPlugin;
 
 public class CustomFileSelector {
 	private BooleanEditor useStandardFile;
-	private FileEditor customFile;		
+	private FileEditor customFile;
+	private StringEditor customTarget;
 	private Font bigFont;
 	
 	private String currentlySelectedCustom;
@@ -53,6 +55,10 @@ public class CustomFileSelector {
 	private String customAssociationSlot;
 	private String customAssociatedOverrideSlot;
 	private EnhancedCompiledArtifactIdentification customArtifactKey;
+	
+	private String customTargetAssociationSlot;
+	private String defaultTarget = "install";
+	private String defaultFile = "build.xml";
 	
 	private boolean initialStandardValue;
 	
@@ -132,6 +138,11 @@ public class CustomFileSelector {
 	public void setCustomAssociatedOverrideSlot(String customAssociatedOverrideSlot) {
 		this.customAssociatedOverrideSlot = customAssociatedOverrideSlot;
 	}
+	
+	@Configurable @Required
+	public void setCustomTargetAssociationSlot(String customTargetAssociationSlot) {
+		this.customTargetAssociationSlot = customTargetAssociationSlot;
+	}
 		
 
 	// diverse 
@@ -167,10 +178,12 @@ public class CustomFileSelector {
         	public void widgetSelected(SelectionEvent e) {
         		if (useStandardFile.getSelection()) {
         			customFile.setEnabled(false);
+        			customTarget.setEnabled(false);
         			currentlySelectedUsageOfStandard = true;
         		}
         		else {
         			customFile.setEnabled(true);
+        			customTarget.setEnabled(true);
         			currentlySelectedUsageOfStandard = false;
         		}
         		super.widgetSelected(e);
@@ -178,7 +191,7 @@ public class CustomFileSelector {
         });
 
 		useStandardFile.setLabelToolTip(standardLabelTip);
-		useStandardFile.setCheckToolTip( standardCheckTip);
+		useStandardFile.setEditToolTip( standardCheckTip);
 
 		Composite control = useStandardFile.createControl(composite, standardLabel);		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
@@ -190,7 +203,7 @@ public class CustomFileSelector {
 		customFile = new FileEditor( parent.getShell());
 		customFile.setExtensions( extensions);
 		customFile.setLabelToolTip( customLabelTip);
-		customFile.setCheckToolTip( customCheckTip);
+		customFile.setEditToolTip( customCheckTip);
 		
 		control = customFile.createControl(composite, customLabel);		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
@@ -215,7 +228,7 @@ public class CustomFileSelector {
 			}
 		
 			// build file 
-			String home = customArtifactKey.getOrigin() + "/build.xml";
+			String home = customArtifactKey.getOrigin() + "/" + defaultFile;
 			Map<String,String> assocs = DevrockPlugin.envBridge().storageLocker().getValue( customAssociationSlot, null);
 			if (assocs != null) {
 				String customValue = assocs.get( customArtifactKey.asString());
@@ -252,6 +265,32 @@ public class CustomFileSelector {
 				}
 			}
 		});
+		
+		// target
+		customTarget = new StringEditor();
+		control = customTarget.createControl(composite, "target: ");
+		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
+
+		if (customArtifactKey != null)  {
+			Map<String,String> targets = DevrockPlugin.envBridge().storageLocker().getValue( customTargetAssociationSlot, null);
+			if (targets != null) {
+				String customValue = targets.get( customArtifactKey.asString());
+				if (customValue != null) {				
+					customTarget.setSelection(customValue);
+				}
+				else {
+					customTarget.setSelection( defaultTarget);
+				}		
+			}
+			else {
+				customTarget.setSelection( defaultTarget);
+			}
+		}
+		
+		if (useStandard) {
+			customTarget.setEnabled(false);
+		}			
+		
        
         return composite;
 	}

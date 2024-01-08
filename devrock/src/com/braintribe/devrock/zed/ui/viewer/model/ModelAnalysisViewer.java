@@ -172,7 +172,7 @@ public class ModelAnalysisViewer implements IMenuListener, IDisposable, HasFinge
         nameColumn.getColumn().setToolTipText( "Findings of the model analysis");
         nameColumn.getColumn().setWidth(1000);
         
-        ViewLabelProvider viewLabelProvider = new ViewLabelProvider();
+        ViewLabelProvider viewLabelProvider = new ViewLabelProvider(context);
         viewLabelProvider.setUiSupport(uiSupport);
         viewLabelProvider.setUiSupportStylersKey("zed-model-analysis-view");
                 
@@ -263,6 +263,9 @@ public class ModelAnalysisViewer implements IMenuListener, IDisposable, HasFinge
 	        				continue;	        				
 	        			}
 	        			qualifiedName = packageName + "." + typeName;	        			
+	        		}
+	        		else {
+	        			return;
 	        		}
 	        		
 	        		final String actionPackageName = packageName;

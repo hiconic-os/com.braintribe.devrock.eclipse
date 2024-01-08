@@ -12,6 +12,7 @@
 package com.braintribe.devrock.analysis.ui;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -33,8 +34,11 @@ import com.braintribe.devrock.api.ui.fonts.FontHandler;
 import com.braintribe.devrock.api.ui.selection.CustomRepositoryConfigurationSelector;
 import com.braintribe.devrock.api.ui.viewers.artifacts.selector.CompoundTerminalSelector;
 import com.braintribe.devrock.mc.api.classpath.ClasspathResolutionScope;
+import com.braintribe.devrock.mc.api.repository.configuration.RepositoryReflection;
 import com.braintribe.devrock.mc.core.configuration.StandaloneRepositoryConfigurationLoader;
+import com.braintribe.devrock.model.repository.Repository;
 import com.braintribe.devrock.model.repository.RepositoryConfiguration;
+import com.braintribe.devrock.model.repository.WorkspaceRepository;
 import com.braintribe.devrock.plugin.DevrockPlugin;
 import com.braintribe.gm.model.reason.Maybe;
 import com.braintribe.gm.model.reason.Reasons;
@@ -42,6 +46,7 @@ import com.braintribe.gm.model.reason.essential.Canceled;
 import com.braintribe.gm.model.reason.essential.NotFound;
 import com.braintribe.model.artifact.compiled.CompiledTerminal;
 import com.braintribe.model.artifact.essential.VersionedArtifactIdentification;
+import com.braintribe.model.generic.reflection.StandardCloningContext;
 
 public class AnalysisDialog extends Dialog {
 	public static final int SHELL_STYLE = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL;
@@ -57,6 +62,7 @@ public class AnalysisDialog extends Dialog {
 	private StandaloneRepositoryConfigurationLoader loader = new StandaloneRepositoryConfigurationLoader();
 	
 	private String finallySelectedConfigurationFile;
+	private boolean ignoreEclipseProjects = false;
 	
 	public AnalysisDialog(Shell parentShell) {
 		super(parentShell);
@@ -168,6 +174,7 @@ public class AnalysisDialog extends Dialog {
 		// store values to be able to return them after close
 		Boolean standardCfgSelected = customRepositoryConfigurationSelector.getCurrentlySelectedUsageOfStandadConfiguration();
 		String selectedCustomCfg = customRepositoryConfigurationSelector.getCurrentlySelectedCustomConfiguration();
+		ignoreEclipseProjects = customRepositoryConfigurationSelector.getIgnoreEclipsePopulation();
 		
 		if (standardCfgSelected == false && selectedCustomCfg != null && selectedCustomCfg.length() > 0) {
 			finallySelectedConfigurationFile = selectedCustomCfg;
@@ -221,20 +228,46 @@ public class AnalysisDialog extends Dialog {
 		// after close, finallySelectedConfigurationFile is not null, hence it has precedence
 		String selection = finallySelectedConfigurationFile != null ? finallySelectedConfigurationFile : customRepositoryConfigurationSelector.getCurrentlySelectedCustomConfiguration();
 		if (selection == null || selection.length() > 0) {
-			return Maybe.empty( Reasons.build(Canceled.T).toReason());			
+			Maybe<RepositoryReflection> configurationMayBe = DevrockPlugin.mcBridge().reflectRepositoryConfiguration();
+			if (configurationMayBe.isUnsatisfied()) {
+				return Maybe.empty( configurationMayBe.whyUnsatisfied());
+			}
+			RepositoryConfiguration repositoryConfiguration = configurationMayBe.get().getRepositoryConfiguration();
+			if (ignoreEclipseProjects ) {
+				return removeWorkspaceRepositoryFromConfiguration( repositoryConfiguration);			
+			}
+			else  {
+				return Maybe.complete( repositoryConfiguration);
+			}
 		}
 		else {
 			File file = new File( selection);
-			if (file.exists()) {
-				
+			if (file.exists()) {				
 				loader.setVirtualEnvironment(DevrockPlugin.instance().virtualEnviroment());
 				Maybe<RepositoryConfiguration> repositoryConfigurationMaybe = loader.loadRepositoryConfiguration( new File( selection));
+				// check if eclipse's projects should be ignored 
+				if (ignoreEclipseProjects && repositoryConfigurationMaybe.isSatisfied()) {	
+					
+					return removeWorkspaceRepositoryFromConfiguration(repositoryConfigurationMaybe.get());
+				}
 				return repositoryConfigurationMaybe;
 			}
 			else {
 				return Maybe.empty( Reasons.build(NotFound.T).text( "selected configuration file doesn't exist:" + file.getAbsolutePath()).toReason());
 			}
 		}
+	}
+
+	private Maybe<RepositoryConfiguration> removeWorkspaceRepositoryFromConfiguration(RepositoryConfiguration repositoryConfiguration) {
+		RepositoryConfiguration clonedRepositoryConfiguration = repositoryConfiguration.clone(new StandardCloningContext());
+		Iterator<Repository> iterator = clonedRepositoryConfiguration.getRepositories().iterator();
+		while (iterator.hasNext()) {
+			Repository repository = iterator.next();
+			if (repository instanceof WorkspaceRepository) {
+				iterator.remove();
+			}
+		}
+		return Maybe.complete( clonedRepositoryConfiguration);
 	}
 	
 	private void updateSelectedScope() {

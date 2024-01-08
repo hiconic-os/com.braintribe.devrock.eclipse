@@ -32,25 +32,13 @@ import com.braintribe.cfg.Configurable;
  * @author pit
  *
  */
-public class ColorEditor extends AbstractEditor implements SelectionListener {
+public class ColorEditor extends AbstractEditor<Color> implements SelectionListener {
 	private Color startValue;
 	private Color selectedColor;
 	private Button choose;
 	
-	private String labelToolTip;
-	private String checkToolTip;
 	private SelectionListener selectionListener;
 	private Shell shell;
-	
-	@Configurable
-	public void setLabelToolTip(String labelToolTip) {
-		this.labelToolTip = labelToolTip;
-	}
-
-	@Configurable
-	public void setCheckToolTip(String checkToolTip) {
-		this.checkToolTip = checkToolTip;
-	}
 	
 	@Configurable
 	public void setSelectionListener(SelectionListener selectionListener) {
@@ -82,8 +70,8 @@ public class ColorEditor extends AbstractEditor implements SelectionListener {
 			choose.setBackground(startValue);
 		}
 		
-		if (checkToolTip != null) {
-			choose.setToolTipText(checkToolTip);
+		if (editToolTip != null) {
+			choose.setToolTipText(editToolTip);
 		}
 		if (selectionListener != null) {
 			choose.addSelectionListener(selectionListener);
@@ -134,6 +122,13 @@ public class ColorEditor extends AbstractEditor implements SelectionListener {
 			}
 		}
 	}
+
+	@Override
+	public void setEnabled(boolean value) {
+		choose.setEnabled(value);
+	}
+	
+	
 		
 	
 }

@@ -816,8 +816,8 @@ public class ContainerResolutionViewer extends DevrockDialog implements DetailRe
 			if (preselected == null) {
 				List<AnalysisTerminal> terminals = resolution.getTerminals();
 				if (terminals.size() == 1) {
-					AnalysisArtifact art = (AnalysisArtifact) terminals.get(0);
-					preselected = art.asString().replace(':', '.').replace('#', '-');					
+					AnalysisTerminal at = terminals.get(0);									
+					preselected = at.asString().replace(':', '.').replace('#', '-');					
 				}
 			}
 

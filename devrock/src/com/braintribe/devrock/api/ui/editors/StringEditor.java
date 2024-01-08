@@ -26,7 +26,7 @@ import com.braintribe.cfg.Configurable;
 import com.braintribe.devrock.api.ve.listeners.VirtualEnvironmentNotificationListener;
 
 
-public class StringEditor extends AbstractEditor implements ModifyListener, VirtualEnvironmentNotificationListener {
+public class StringEditor extends AbstractEditor<String> implements ModifyListener, VirtualEnvironmentNotificationListener {
 	
 	private String startValue;
 	private boolean startEnabled = true;
@@ -48,6 +48,7 @@ public class StringEditor extends AbstractEditor implements ModifyListener, Virt
 		Label label = new Label( composite, SWT.NONE);
 		label.setText( tag);
 		label.setLayoutData( new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		label.setToolTipText(labelToolTip);
 		
 		text = new Text( composite, SWT.NONE);
 		text.setLayoutData( new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 1));
@@ -55,6 +56,7 @@ public class StringEditor extends AbstractEditor implements ModifyListener, Virt
 			text.setText( startValue);
 		}		
 		text.setEnabled(startEnabled);
+		text.setToolTipText(editToolTip);
 		if (startListener != null)
 			text.addModifyListener(startListener);
 		text.addModifyListener( this);

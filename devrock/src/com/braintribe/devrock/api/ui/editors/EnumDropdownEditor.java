@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import com.braintribe.cfg.Configurable;
 import com.braintribe.cfg.Required;
 
-public class EnumDropdownEditor<T extends Enum<T>> {
+public class EnumDropdownEditor<T extends Enum<T>> extends AbstractEditor<T> {
 
 		private Map<String, T> choicesMap = new HashMap<>();
 		private Map<T, String> toolTipMap = new HashMap<>();
@@ -86,6 +86,11 @@ public class EnumDropdownEditor<T extends Enum<T>> {
 			combo.setItems( choicesMap.keySet().toArray(new String[0]));
 						
 			return composite;
+		}
+
+		@Override
+		public void setEnabled(boolean value) {
+			combo.setEnabled(value);	
 		}
 		
 		

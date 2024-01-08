@@ -19,24 +19,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
-import com.braintribe.cfg.Configurable;
-
-public class IntegerEditor {
+public class IntegerEditor extends AbstractEditor<Integer> {
 	private Integer start;
 	private Text text;
 	
-	private String labelToolTip;
-	private String valueToolTip;
-	
-	@Configurable
-	public void setLabelToolTip(String labelToolTip) {
-		this.labelToolTip = labelToolTip;
-	}
-
-	@Configurable
-	public void setValueToolTip(String checkToolTip) {
-		this.valueToolTip = checkToolTip;
-	}
 
 
 	public Composite createControl( Composite parent, String tag) {
@@ -57,8 +43,8 @@ public class IntegerEditor {
 		if (start != null) {
 			text.setText( start.toString());
 		}
-		if (valueToolTip != null) {
-			text.setToolTipText(valueToolTip);
+		if (editToolTip != null) {
+			text.setToolTipText(editToolTip);
 		}
 		return composite;
 	}
@@ -67,7 +53,7 @@ public class IntegerEditor {
 		return Integer.valueOf(text.getText());
 	}
 	
-	public void setSelection( int selection){
+	public void setSelection( Integer selection){
 		start = selection;
 		if (text != null) {
 			text.setText( "" + selection);
@@ -77,4 +63,11 @@ public class IntegerEditor {
 	public Widget getWidget() {
 		return text;
 	}
+
+	@Override
+	public void setEnabled(boolean value) {	
+		text.setEnabled(value);
+	}
+	
+	
 }

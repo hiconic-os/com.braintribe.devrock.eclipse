@@ -95,7 +95,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		// AC stuff 
 		activateAutoWorkspaceUpdate = new BooleanEditor();
 		activateAutoWorkspaceUpdate.setLabelToolTip( "Changes the behavior of the workspace resource change listener");
-		activateAutoWorkspaceUpdate.setCheckToolTip( "If checked, the containers will react to changes of the workspace, otherwise manual synchronizing is required");
+		activateAutoWorkspaceUpdate.setEditToolTip( "If checked, the containers will react to changes of the workspace, otherwise manual synchronizing is required");
 		Composite control = activateAutoWorkspaceUpdate.createControl(choicesComposite, "Automatically update containers on detected changes in workspace");
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean autoUpdate = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AUTO_UPDATE_WS, true);
@@ -103,7 +103,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		
 		selectiveWorkspaceUpdate = new BooleanEditor();
 		selectiveWorkspaceUpdate.setLabelToolTip("Changes the behavior of the default workspace sync");
-		selectiveWorkspaceUpdate.setCheckToolTip( "If checked and projects are selected, it will sync these. Otherwise it will sync the workspace");
+		selectiveWorkspaceUpdate.setEditToolTip( "If checked and projects are selected, it will sync these. Otherwise it will sync the workspace");
 		control = selectiveWorkspaceUpdate.createControl(choicesComposite, "Selective workspace synchronization");		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean selectivity = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_SELECTIVE_WS_SYNCH, false);
@@ -113,7 +113,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		
 		requireHigherVersionInFlexibleAssignment = new BooleanEditor();
 		requireHigherVersionInFlexibleAssignment.setLabelToolTip("Changes how non-matching projects of dependencies in debug-module projects are handled");
-		requireHigherVersionInFlexibleAssignment.setCheckToolTip( "If checked, the project must have at least the same version as requested. Otherwise it only has to match a derived standard range");
+		requireHigherVersionInFlexibleAssignment.setEditToolTip( "If checked, the project must have at least the same version as requested. Otherwise it only has to match a derived standard range");
 		control = requireHigherVersionInFlexibleAssignment.createControl(choicesComposite, "Strict version interpretation for debug-module dependency-projects");		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean requireHigherVersion = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AC_REQUIRE_HIGHER_VERSION, false);
@@ -131,7 +131,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		// model builder messages
 		modelBuilderMessages = new BooleanEditor();
 		modelBuilderMessages.setLabelToolTip("Changes whether the model-builder reports success");
-		modelBuilderMessages.setCheckToolTip( "If checked, the model-builder will report success after buikd, otherwise it will report only errors");
+		modelBuilderMessages.setEditToolTip( "If checked, the model-builder will report success after buikd, otherwise it will report only errors");
 		control = modelBuilderMessages.createControl(choicesComposite, "Show success messages of the model-builder plugin");		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean successMessages = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_MB_SUCCESS_MESSAGES, false);

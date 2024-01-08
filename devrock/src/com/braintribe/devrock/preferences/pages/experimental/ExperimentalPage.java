@@ -108,7 +108,7 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		
 		useSelectiveWorkspaceExport = new BooleanEditor();
 		useSelectiveWorkspaceExport.setLabelToolTip( "Choose whether to use the selective workspace exporter");
-		useSelectiveWorkspaceExport.setCheckToolTip("If activated, the dump will export the selected workspace items.\nOtherwise, the full content of the workspace is exported");
+		useSelectiveWorkspaceExport.setEditToolTip("If activated, the dump will export the selected workspace items.\nOtherwise, the full content of the workspace is exported");
 		control = useSelectiveWorkspaceExport.createControl(wsChoicesComposite, "Activate selective workspace exporter");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean usSelectiveWsExportValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_WS_IMPORT_USE_SELECTIVE_EXPORT, false);
@@ -118,7 +118,7 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		
 		addStorageLockerDataToWorkspaceExport = new BooleanEditor();
 		addStorageLockerDataToWorkspaceExport.setLabelToolTip( "Choose whether to add the plugin preferences to the export");
-		addStorageLockerDataToWorkspaceExport.setCheckToolTip("If activated, the dump will also contain the current preferences.\nOtherwise, only projects and working-sets are exported");
+		addStorageLockerDataToWorkspaceExport.setEditToolTip("If activated, the dump will also contain the current preferences.\nOtherwise, only projects and working-sets are exported");
 		control = addStorageLockerDataToWorkspaceExport.createControl(wsChoicesComposite, "Include plugin preferenes to export");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean addSldToExportValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_WS_IMPORT_INCLUDE_STORAGE_LOCKER_DATA, false);
@@ -129,7 +129,7 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		// selective import
 		useSelectiveWorkspaceImport = new BooleanEditor();
 		useSelectiveWorkspaceImport.setLabelToolTip( "Choose whether to use the selective workspace importer");
-		useSelectiveWorkspaceImport.setCheckToolTip("If activated, the content of the dumped workspace is shown and content can be selected.\nOtherwise, the full content of the selected file is imported");
+		useSelectiveWorkspaceImport.setEditToolTip("If activated, the content of the dumped workspace is shown and content can be selected.\nOtherwise, the full content of the selected file is imported");
 		control = useSelectiveWorkspaceImport.createControl(wsChoicesComposite, "Activate selective workspace importer");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean usSelectiveWsImportValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_WS_IMPORT_USE_SELECTIVE_IMPORT, false);
@@ -147,7 +147,7 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		 		
 		allowZedToPurgeExcessDependencies = new BooleanEditor();
 		allowZedToPurgeExcessDependencies.setLabelToolTip( "Choose whether to allow zed's dependency analyis UI to delete excessive depedencies");
-		allowZedToPurgeExcessDependencies.setCheckToolTip("If activated, zed will try to delete dependencies it deems to be excessive.\nAs Zed's still in construction and can make mistakes by omission, it may render the artifact non-buildable\nStill, in that case, you can revert to the .bak-file created");
+		allowZedToPurgeExcessDependencies.setEditToolTip("If activated, zed will try to delete dependencies it deems to be excessive.\nAs Zed's still in construction and can make mistakes by omission, it may render the artifact non-buildable\nStill, in that case, you can revert to the .bak-file created");
 		control = allowZedToPurgeExcessDependencies.createControl(zedChoicesComposite, "Allow zed to purge excessive dependencies from a project");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean zedAlloPurgeValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_ALLOW_PURGE, false);

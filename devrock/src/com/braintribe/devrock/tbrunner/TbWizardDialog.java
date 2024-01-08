@@ -53,9 +53,11 @@ import com.braintribe.common.lcd.Pair;
 import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
 import com.braintribe.devrock.api.ui.commons.DevrockDialog;
 import com.braintribe.devrock.api.ui.commons.UiSupport;
+import com.braintribe.devrock.api.ui.editors.AbstractEditor;
 import com.braintribe.devrock.api.ui.editors.BooleanEditor;
+import com.braintribe.devrock.api.ui.editors.EditorWithDefault;
+import com.braintribe.devrock.api.ui.editors.FileEditor;
 import com.braintribe.devrock.api.ui.editors.StringEditor;
-import com.braintribe.devrock.api.ui.selection.CustomFileSelector;
 import com.braintribe.devrock.bridge.eclipse.workspace.BasicWorkspaceProjectInfo;
 import com.braintribe.devrock.eclipse.model.identification.EnhancedCompiledArtifactIdentification;
 import com.braintribe.devrock.eclipse.model.reason.devrock.PluginReason;
@@ -103,14 +105,11 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 	private StringEditor skipPositionEditor;
 	private UiSupport uiSupport = DevrockPlugin.instance().uiSupport();
 
-
-	private CustomFileSelector customFileSelector;
-
-
 	private BooleanEditor loadProject;
-
-
 	private BooleanEditor refreshProject;
+
+	private EditorWithDefault<String> customFileEditor;
+	private EditorWithDefault<String> customTargetEditor;
 	
 	public TbWizardDialog(Shell parentShell) {
 		super(parentShell);
@@ -261,40 +260,103 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 		Composite fComposite = new Composite(composite, SWT.BORDER);
 		fComposite.setLayout(layout);
 		fComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-
 		
-		customFileSelector = new CustomFileSelector();
-		customFileSelector.setBigFont(bigFont);
-		customFileSelector.setTitle( "build file");
-		customFileSelector.setToolTip("Allows the selection of the build file to be used");
-
-		customFileSelector.setStandardLabel( "default");
-		customFileSelector.setStandardLabelTip( "use default build file (build.xml in working directory)");
-		customFileSelector.setStandardCheckTip( "if on, the standard build file is used, if off, a custom build file can be used");
-		customFileSelector.setStandardSlot(StorageLockerSlots.SLOT_TBR_STANDARD_BUILDFILE);		
-		customFileSelector.setCustomAssociatedOverrideSlot( StorageLockerSlots.SLOT_TBR_STANDARD_ASSOCIATION);
-		customFileSelector.setInitialStandardValue(true);
+		customFileEditor = new EditorWithDefault<>();
 		
-
-		customFileSelector.setCustomLabel( "custom build file");
-		customFileSelector.setCustomLabelTip( "use an alternative build file");
-		customFileSelector.setCustomCheckTip( "select a custom build file");
-		customFileSelector.setExtensions(null);		
-		customFileSelector.setCustomAssociationSlot(StorageLockerSlots.SLOT_TBR_CUSTOM_BUILDFILE_ASSOCIATION);
+		customFileEditor.setBigFont(bigFont);
+		customFileEditor.setLabelToolTip("use default build file (build.xml in working directory)");
+		customFileEditor.setEditToolTip("if on, the standard build file is used, if off, a custom build file can be used");		
+		customFileEditor.setEditorSupplier( this::getFileEditor);
+		customFileEditor.setUseCustomLabel("custom build file");
+		customFileEditor.setUseDefaultLabel("default");
 		
-		// show custom value if present? 
+		Composite customFileEditorComposite = customFileEditor.createControl(fComposite, "build file");
+		customFileEditorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
+		
+		customTargetEditor = new EditorWithDefault<>();
+		customTargetEditor.setBigFont(bigFont);
+		customTargetEditor.setLabelToolTip("use default build target");
+		customTargetEditor.setEditToolTip("if set, the custom target will be used");		
+		customTargetEditor.setEditorSupplier( this::getTargetEditor);
+		customTargetEditor.setUseCustomLabel("custom build target");
+		customTargetEditor.setUseDefaultLabel("default");
+		
+		Composite customTargetEditorComposite = customTargetEditor.createControl(fComposite, "build target");
+		customTargetEditorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
+		
+		//
+		// parameterize
+		// 
 		List<EnhancedCompiledArtifactIdentification> selectedArtifacts = getSelectedArtifacts();
 		if (selectedArtifacts.size() == 1) {
+			
+			// default override 
 			EnhancedCompiledArtifactIdentification ecai = selectedArtifacts.get(0);					
-			customFileSelector.setCustomArtifactKey( ecai);
+			Map<String,Boolean> defaultFileOverrides = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_TBR_STANDARD_BUILDFILE_ASSOCIATION, null);
+			if (defaultFileOverrides != null) {
+				Boolean override = defaultFileOverrides.get(ecai.asString());
+				if (override == null || override == true) {
+					customFileEditor.setDefaultSelection(true);
+				}
+				else {
+					customFileEditor.setDefaultSelection(false);
+				}
+			}
+			else {
+				customFileEditor.setDefaultSelection(true);
+			}
+			// build file override 
+			String standardBuildFile = ecai.getOrigin() + "/" + "build.xml";
+			Map<String,String> fileAssocs = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_TBR_CUSTOM_BUILDFILE_ASSOCIATION, null);
+			if (fileAssocs != null) {
+				String customValue = fileAssocs.get( ecai.asString());
+				if (customValue != null) {
+					customFileEditor.setSelection( customValue);					
+				}
+				else {
+					customFileEditor.setSelection(standardBuildFile);
+				}
+			}
+			else {
+				customFileEditor.setSelection(standardBuildFile);
+			}
+			
+			
+			// build target override
+			Map<String,Boolean> targetOverrides = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_TBR_STANDARD_TARGET_ASSOCIATION, null);
+			if (targetOverrides != null) {
+				Boolean override = targetOverrides.get(ecai.asString());
+				if (override == null || override == true) {
+					customTargetEditor.setDefaultSelection(true);
+				}
+				else {
+					customTargetEditor.setDefaultSelection(false);
+				}
+			}			
+			else {
+				customTargetEditor.setDefaultSelection(true);
+			}
+			
+			String standardBuildTarget = "install";
+			Map<String,String> targetAssocs = DevrockPlugin.envBridge().storageLocker().getValue(StorageLockerSlots.SLOT_TBR_CUSTOM_TARGET_ASSOCIATION, null);				
+			if (targetAssocs != null) {
+				String customValue = targetAssocs.get( ecai.asString());
+				if (customValue != null) {
+					customTargetEditor.setSelection( customValue);					
+				}
+				else {
+					customTargetEditor.setSelection(standardBuildTarget);
+				}
+			}	
+			else {
+				customTargetEditor.setSelection(standardBuildTarget);
+			}
 		}
-
-		Composite customFileSelectorComposite = customFileSelector.createControl(fComposite);
-		customFileSelectorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
-		
-		
-	
-    	
+		else {
+			customFileEditor.setDefaultSelection(false);
+			customTargetEditor.setDefaultSelection(false);
+		}
+					    
     	// mode selection
     	Composite modeComposite = new Composite( composite, SWT.BORDER);
     	modeComposite.setToolTipText("Allows to specify what is the base directory of the build and whether it should build required artifacts as well");
@@ -361,13 +423,13 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
     	
     	loadProject = new BooleanEditor();
     	loadProject.setLabelToolTip("Sets whether an external project was built, it should be loaded into the workspace");
-    	loadProject.setCheckToolTip("If activated, a built project will be added to the workspace, depending on whether it was already present");
+    	loadProject.setEditToolTip("If activated, a built project will be added to the workspace, depending on whether it was already present");
     	Composite control = loadProject.createControl(composite, "Load project after build has completed");
     	control.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, true, false, 4,1));
     
     	refreshProject = new BooleanEditor();
     	refreshProject.setLabelToolTip("Sets whether the built projects of the workspace should be refreshed");
-    	refreshProject.setCheckToolTip("If activated, a built project of the workspace is refreshed");
+    	refreshProject.setEditToolTip("If activated, a built project of the workspace is refreshed");
     	control = refreshProject.createControl(composite, "Refresh project after build has completed");
     	control.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, true, false, 4,1));
     	
@@ -431,12 +493,15 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 			if (transitive.getSelection()) {
 				group.setEnabled(true);
 				codebase.setEnabled( true);
-				customFileSelector.setEnabled(false);				
+				customFileEditor.setEnabled( false);
+				customTargetEditor.setEnabled( false);
+				
 			}
 			else {
 				group.setEnabled( false);
 				codebase.setEnabled( false);
-				customFileSelector.setEnabled(true);
+				customFileEditor.setEnabled( true);
+				customTargetEditor.setEnabled( true);
 			}
 		}
 	}
@@ -520,24 +585,72 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 			singleArtifact = sourceArtifacts.get(0).asString();
 		}
 		
+		
 		File selectedBuildFile = null;
+		if (!customFileEditor.isDefaultSelected()) {
+			selectedBuildFile = new File( customFileEditor.getSelection());
+		}
+		
+		String selectedBuildTarget = null;
+		if (!customTargetEditor.isDefaultSelected()) {
+			selectedBuildTarget = customTargetEditor.getSelection();
+		}
+		
+		// handle storage? 
+		
+		/*
 		if (!customFileSelector.getCurrentlySelectedUsageOfStandardFile() && customFileSelector.getCurrentlySelectedCustomFile() != null) {
 			selectedBuildFile = new File( customFileSelector.getCurrentlySelectedCustomFile());
 		}
 		else {
 			selectedBuildFile = new File( buildWorkingDirectory, "build.xml");
 		}
+		*/
 				
 		final String skipExpression = skipPositionEditor.getSelection();
 		final File workingDirectory = buildWorkingDirectory;
 		final List<String> expressions = artifactExpressions;
-		final String finalArtifact = singleArtifact;							
+		final String finalArtifact = singleArtifact;		
 		
-		// store select
+		//
+		// store values
+		// 		
 		DevrockPlugin.instance().storageLocker().setValue(StorageLockerSlots.SLOT_TBR_TRANSITIVE, transitive.getSelection());
-		customFileSelector.storeValues();
 		
+		// file
+		
+		// -> overrides
+		boolean useStandardBuildFile = customFileEditor.getDefaultSelection();
+		Map<String, Boolean> overrides = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_TBR_STANDARD_BUILDFILE_ASSOCIATION, new HashMap<>());
+		overrides.put(finalArtifact, useStandardBuildFile);
+		DevrockPlugin.instance().storageLocker().setValue(StorageLockerSlots.SLOT_TBR_STANDARD_BUILDFILE_ASSOCIATION, overrides);
+		
+		// -> file		
+		if (!useStandardBuildFile) {
+			Map<String,String> assocs = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_TBR_CUSTOM_BUILDFILE_ASSOCIATION, new HashMap<>());
+			assocs.put(finalArtifact, customFileEditor.getSelection());
+			DevrockPlugin.instance().storageLocker().setValue(StorageLockerSlots.SLOT_TBR_CUSTOM_BUILDFILE_ASSOCIATION, assocs);
+		}
+		
+		// target
+		
+		
+		// -> overrides
+		boolean useStandardTarget = customTargetEditor.getDefaultSelection();
+		overrides = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_TBR_STANDARD_TARGET_ASSOCIATION, new HashMap<>());
+		overrides.put(finalArtifact, useStandardTarget);
+		DevrockPlugin.instance().storageLocker().setValue(StorageLockerSlots.SLOT_TBR_STANDARD_TARGET_ASSOCIATION, overrides);
+				
+		if (!useStandardTarget) {
+			Map<String,String> assocs = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_TBR_CUSTOM_TARGET_ASSOCIATION, new HashMap<>());
+			assocs.put(finalArtifact, customTargetEditor.getSelection());
+			DevrockPlugin.instance().storageLocker().setValue(StorageLockerSlots.SLOT_TBR_CUSTOM_TARGET_ASSOCIATION, assocs);
+		}
+		
+		
+		// run it 
 		final File buildFile = selectedBuildFile;
+		final String buildTarget = selectedBuildTarget;
 
 		Job job = new Job(AC_TB_WIZARD) {
 			@Override
@@ -546,7 +659,7 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 		    	
 				DrRunPerCommandLine antRun = new DrRunPerCommandLine();
 				try {
-					antRun.run( finalArtifact, expressions, skipExpression, buildFile, workingDirectory, bridge);					
+					antRun.run( finalArtifact, expressions, skipExpression, buildTarget, buildFile, workingDirectory, bridge);					
 					if (loadAfterRun) {
 						ProjectImporter.importProjects(workingset, sourceArtifacts, null);
 					}						
@@ -676,7 +789,21 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 		item.setText( name);				
 		item.setToolTipText( String.format(TARGET_ARTIFACT_S, name));
 	}
+
+	private AbstractEditor<String> getFileEditor(Shell shell) {
+		FileEditor editor = new FileEditor( shell);		
+		editor.setLabelToolTip( "use an alternative build file");
+		editor.setEditToolTip( "select a custom build file");
+		editor.setExtensions( new String[] {"*.xml"});
+		return editor;
+	}
 	
+	private AbstractEditor<String> getTargetEditor(Shell shell) {
+		StringEditor editor = new StringEditor();		
+		editor.setLabelToolTip( "use an alternative build target");
+		editor.setEditToolTip( "select a custom build target");
+		return editor;
+	}
 	
 	
 }

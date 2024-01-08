@@ -90,7 +90,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		// resolution viewer 
 		activateResolutionViewerYaml = new BooleanEditor();
 		activateResolutionViewerYaml.setLabelToolTip( "Add a YAML display tab to the resolution viewer - careful : big files put a heavy tax on Eclipse!");
-		activateResolutionViewerYaml.setCheckToolTip( "If checked, the resolution viewer shows the YAML of the resolution as a tab (you were warned)");
+		activateResolutionViewerYaml.setEditToolTip( "If checked, the resolution viewer shows the YAML of the resolution as a tab (you were warned)");
 		Composite control = activateResolutionViewerYaml.createControl(viewerChoicesComposite, "Add a YAML display tab to the resolution viewer (for powerful computers only)");
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean enableViewerButton = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ARTIFACT_VIEWER_YAML_ENABLED, false);
@@ -98,7 +98,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		
 		storeSettingsOfResolutionViewer = new BooleanEditor();
 		storeSettingsOfResolutionViewer.setLabelToolTip( "Whether remember your last choices of view possiblities in the resolution viewer");
-		storeSettingsOfResolutionViewer.setCheckToolTip( "If checked, the resolution viewer will remember your view choices for each tab (plus one for all detail tabs)");
+		storeSettingsOfResolutionViewer.setEditToolTip( "If checked, the resolution viewer will remember your view choices for each tab (plus one for all detail tabs)");
 		control = storeSettingsOfResolutionViewer.createControl(viewerChoicesComposite, "Store view settings on resolution viewer tabs");
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean storeSettings = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ARTIFACT_VIEWER_STORE_VIEW_SETTINGS, false);
@@ -106,7 +106,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		
 		terminalTabInitial = new BooleanEditor();
 		terminalTabInitial.setLabelToolTip( "Whether to initially open the terminal-tab or the solutions-tab when the resolution-viewer is openend");
-		terminalTabInitial.setCheckToolTip( "If checked, the resolution viewer will show the 'terminal-tab' when opened. Otherwise will activate the 'solutions-tab'");
+		terminalTabInitial.setEditToolTip( "If checked, the resolution viewer will show the 'terminal-tab' when opened. Otherwise will activate the 'solutions-tab'");
 		control = terminalTabInitial.createControl(viewerChoicesComposite, "Open the 'terminal-tab' at resolution-viewer start-up");
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean terminalInitials = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ARTIFACT_VIEWER_INITIAL_TAG_TERMINAL, true);
@@ -125,7 +125,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 
 		artifactAxisColorEditor = new ColorEditor(getShell());		
 		artifactAxisColorEditor.setLabelToolTip("Color for the 'dependency axis' symbols");
-		artifactAxisColorEditor.setCheckToolTip("The color you select will be used for all symbols shown related to the relationship of artifacts and their dependencies and dependers");
+		artifactAxisColorEditor.setEditToolTip("The color you select will be used for all symbols shown related to the relationship of artifacts and their dependencies and dependers");
 		control = artifactAxisColorEditor.createControl(colorChoicesComposite, "Color for the 'dependency axis' symbols");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		Color defaultColor = Color.create(0, 128, 0);
@@ -134,7 +134,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		
 		parentAxisColorEditor = new ColorEditor(getShell());		
 		parentAxisColorEditor.setLabelToolTip("Color for the 'parent axis' symbols");
-		parentAxisColorEditor.setCheckToolTip("The color you select will be used for all symbols shown related to the relationship of artifacts and their parents and parent-dependers");
+		parentAxisColorEditor.setEditToolTip("The color you select will be used for all symbols shown related to the relationship of artifacts and their parents and parent-dependers");
 		control = parentAxisColorEditor.createControl(colorChoicesComposite, "Color for the 'parent axis' symbols");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		defaultColor = Color.create(128, 128, 128);
@@ -144,7 +144,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		
 		importAxisColorEditor = new ColorEditor(getShell());		
 		importAxisColorEditor.setLabelToolTip("Color for the 'import axis' symbols");
-		importAxisColorEditor.setCheckToolTip("The color you select will be used for all symbols shown related to the relationship of artifacts and their imports and importers");
+		importAxisColorEditor.setEditToolTip("The color you select will be used for all symbols shown related to the relationship of artifacts and their imports and importers");
 		control = importAxisColorEditor.createControl(colorChoicesComposite, "Color for the 'import axis' symbols");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		defaultColor = Color.create(0, 0, 0);
@@ -154,7 +154,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		
 		standardVersionColorEditor = new ColorEditor(getShell());		
 		standardVersionColorEditor.setLabelToolTip("Color for standard versions");
-		standardVersionColorEditor.setCheckToolTip("The color you select will be used for all standard versions of artifacts");
+		standardVersionColorEditor.setEditToolTip("The color you select will be used for all standard versions of artifacts");
 		control = standardVersionColorEditor.createControl(colorChoicesComposite, "Color for standard versions");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		defaultColor = Color.create(0, 128, 0);
@@ -163,7 +163,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		
 		pcVersionColorEditor = new ColorEditor(getShell());		
 		pcVersionColorEditor.setLabelToolTip("Color for preliminary versions");
-		pcVersionColorEditor.setCheckToolTip("The color you select will be used for all pc/rc/cr/SNAPSHOT versions of artifacts");
+		pcVersionColorEditor.setEditToolTip("The color you select will be used for all pc/rc/cr/SNAPSHOT versions of artifacts");
 		control = pcVersionColorEditor.createControl(colorChoicesComposite, "Color for pc versions");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		defaultColor = Color.create(134, 0, 0);
@@ -187,7 +187,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 
 		zedInitialModelViewModeEditor = new BooleanEditor();
 		zedInitialModelViewModeEditor.setLabelToolTip( "Choose how model analysis data should be presented initially");
-		zedInitialModelViewModeEditor.setCheckToolTip("If activated, the findings are grouped by GenericEntity, otherwise they are groupd by issue-type");
+		zedInitialModelViewModeEditor.setEditToolTip("If activated, the findings are grouped by GenericEntity, otherwise they are groupd by issue-type");
 		control = zedInitialModelViewModeEditor.createControl(zedChoicesComposite, "Initially group model-analysis findings by GenericEntity");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));		
 		boolean groupingByEntity = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_MODEL_INITIAL_VIEWMODE, false);
@@ -201,7 +201,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		// override on
 		zedOverrideFingerPrintsEditor = new BooleanEditor();
 		zedOverrideFingerPrintsEditor.setLabelToolTip( "Choose whether to override zed's default ratings");
-		zedOverrideFingerPrintsEditor.setCheckToolTip("If activated, the file specified containing the override values is injected into zed's rating.\nOtherwise the default ratings are used");
+		zedOverrideFingerPrintsEditor.setEditToolTip("If activated, the file specified containing the override values is injected into zed's rating.\nOtherwise the default ratings are used");
 		control = zedOverrideFingerPrintsEditor.createControl(zedOverrideChoicesComposite, "Override zed's default ratings with file");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));		
 		boolean overrideFingerPrintsValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_FP_OVERRIDE_RATINGS, false);
@@ -212,7 +212,7 @@ public class AnalysisPage extends PreferencePage implements IWorkbenchPreference
 		control = zedFingerprintOverridesFileEditor.createControl(zedOverrideChoicesComposite, "Fingerprint file:");
 		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		zedFingerprintOverridesFileEditor.setLabelToolTip("Select a file with overrides for zed's rating");
-		zedFingerprintOverridesFileEditor.setCheckToolTip("Select a YAML formatted map of FingerPrint and their rating to override the default");
+		zedFingerprintOverridesFileEditor.setEditToolTip("Select a YAML formatted map of FingerPrint and their rating to override the default");
 	
 		String zedFile = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_FP_CUSTOM_FILE, null);
 		if (zedFile != null) {

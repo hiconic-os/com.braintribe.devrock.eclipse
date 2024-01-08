@@ -107,7 +107,7 @@ public class DrRunPerCommandLine {
 	 * @param monitor - the {@link ProcessNotificationListener} to be notified 
 	 * @throws TbRunException - arrgh
 	 */
-	public void run( String finalArtifact, List<String> expressions, String skipExpression, File buildFile, File buildDirectory, ProcessNotificationListener monitor) throws TbRunException{
+	public void run( String finalArtifact, List<String> expressions, String skipExpression, String target, File buildFile, File buildDirectory, ProcessNotificationListener monitor) throws TbRunException{
 		try {
 			List<String> cmd = prepareForRun( expressions);
 			
@@ -116,6 +116,9 @@ public class DrRunPerCommandLine {
 				cmd.add(buildFile.getAbsolutePath());
 			}
 			
+			if (target != null) {
+				cmd.add( target);
+			}			
 			
 			// add any system properties 
 			Map<String, String> propertyOverrides = DevrockPlugin.instance().virtualEnviroment().getPropertyOverrrides();

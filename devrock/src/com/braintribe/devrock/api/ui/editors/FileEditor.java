@@ -32,7 +32,7 @@ import com.braintribe.build.artifact.virtualenvironment.VirtualPropertyResolver;
 import com.braintribe.cfg.Configurable;
 import com.braintribe.devrock.api.ve.listeners.VirtualEnvironmentNotificationListener;
 
-public class FileEditor extends AbstractEditor implements ModifyListener, VirtualEnvironmentNotificationListener {
+public class FileEditor extends AbstractEditor<String> implements ModifyListener, VirtualEnvironmentNotificationListener {
 
 	private Shell shell;
 	private String start;
@@ -41,23 +41,11 @@ public class FileEditor extends AbstractEditor implements ModifyListener, Virtua
 	private boolean startEnabled = true;
 	private VirtualPropertyResolver resolver;
 	private ModifyListener listener;
-	private boolean displayBorder = false;
-	private String labelToolTip;
-	private String checkToolTip;
+	private boolean displayBorder = false;	
 	private String selected;
 	
 	private String [] extensions = new String [] {"*.yaml"};
-	
-	@Configurable
-	public void setLabelToolTip(String labelToolTip) {
-		this.labelToolTip = labelToolTip;
-	}
-
-	@Configurable
-	public void setCheckToolTip(String checkToolTip) {
-		this.checkToolTip = checkToolTip;
-	}
-	
+		
 	/**
 	 * sets the filtering extensions for the file selection, default is 'yaml'
 	 * @param extensions - an {@link String} array of valid extensions
@@ -147,7 +135,7 @@ public class FileEditor extends AbstractEditor implements ModifyListener, Virtua
 		
 		scanButton = new Button(composite, SWT.NONE);
 		scanButton.setText("..");
-		scanButton.setToolTipText(checkToolTip);
+		scanButton.setToolTipText(editToolTip);
 		scanButton.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false, 1,1));
 		scanButton.addSelectionListener( new SelectionListener() {
 			
@@ -164,8 +152,8 @@ public class FileEditor extends AbstractEditor implements ModifyListener, Virtua
 			public void widgetDefaultSelected(SelectionEvent arg0) {				
 			}
 		});		
-		if (checkToolTip != null) {
-			scanButton.setToolTipText(checkToolTip);
+		if (editToolTip != null) {
+			scanButton.setToolTipText(editToolTip);
 		}
 		
 		text.setEnabled(startEnabled);

@@ -298,7 +298,7 @@ public class ScanConfigurationPage extends PreferencePage implements IWorkbenchP
     	qiShowAllArtifacts = new BooleanEditor();
     	qiShowAllArtifacts.setSelection( auin);  
     	qiShowAllArtifacts.setLabelToolTip("Changes the way the result of the query are pre-filtered");
-    	qiShowAllArtifacts.setCheckToolTip( "If set, no filtering takes place and the dialog will show you what actually can be imported. Otherwise, what you see is what you can import");
+    	qiShowAllArtifacts.setEditToolTip( "If set, no filtering takes place and the dialog will show you what actually can be imported. Otherwise, what you see is what you can import");
     	Composite uiComposite = qiShowAllArtifacts.createControl(qiGroup, "Show all scanned artifacts, do not filter-out non-importable: ");
     	uiComposite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
     	
@@ -308,7 +308,7 @@ public class ScanConfigurationPage extends PreferencePage implements IWorkbenchP
     	qiFilterOnWorkingSet = new BooleanEditor();
     	qiFilterOnWorkingSet.setSelection( fws);
     	qiFilterOnWorkingSet.setLabelToolTip("Changes the way the result of the query is filtered");
-    	qiFilterOnWorkingSet.setCheckToolTip("If set, projects that exist in the workspace, yet not in the current working-set are not filtered. Otherwise, they are filtered out and not shown");
+    	qiFilterOnWorkingSet.setEditToolTip("If set, projects that exist in the workspace, yet not in the current working-set are not filtered. Otherwise, they are filtered out and not shown");
     	
     	Composite filterComposite = qiFilterOnWorkingSet.createControl(qiGroup, "Allow selection of loaded project if a working set is selected: ");
     	filterComposite.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
