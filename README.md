@@ -1,3 +1,5 @@
 # com.braintribe.devrock.eclipse
 
-Beta site for Eclipse: https://kwaqwagga.ch/devrock-site
+Overall site : https://eclipse.hiconic-os.org
+Beta site for Eclipse: https://eclipse.hiconic-os.org/beta
+Release site for Eclipse: https://eclipse.hiconic-os.org/release
