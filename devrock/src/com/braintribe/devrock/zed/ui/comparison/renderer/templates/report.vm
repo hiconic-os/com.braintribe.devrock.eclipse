@@ -1,0 +1,9 @@
+# Comparison result
+
+Compared artifact $baseArtifact to artifact $otherArtifact on $comparionDate
+
+Found $fingerprints.size discrepancies 
+
+#foreach ($fp in $fingerprints) {
+    $fp.getSlots().get("ISSUE")
+}

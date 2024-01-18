@@ -248,18 +248,18 @@ public class InternalMcBridge implements McBridge {
 			ChangesIndexType changesIndexType = repository.getChangesIndexType();
 			String distinctKey = null;
 			switch (changesIndexType) {
-				case incremental:
-					MavenHttpRepository mrepository = (MavenHttpRepository) repository;
-					distinctKey = mrepository.getUrl();
-					break;
-				case total:
-					distinctKey = repository.getChangesUrl();					
-					break;
-				default:
-					break;			
+			case total:
+				MavenHttpRepository mrepository = (MavenHttpRepository) repository;
+				distinctKey = mrepository.getUrl();
+				break;
+			case incremental:
+				distinctKey = repository.getChangesUrl();					
+				break;
+			default:
+				break;			
 			}
 			// no duplicates (maven based cfg may bring-in to mirrors for 'central' 
-			if (!repositoriesToUseMap.containsKey( distinctKey)) {
+			if (distinctKey != null && !repositoriesToUseMap.containsKey( distinctKey)) {
 				repositoriesToUseMap.put( distinctKey, repository);
 			}
 			else {

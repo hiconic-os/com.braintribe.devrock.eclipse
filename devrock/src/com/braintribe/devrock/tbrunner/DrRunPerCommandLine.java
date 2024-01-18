@@ -42,6 +42,11 @@ public class DrRunPerCommandLine {
 	private static final String WIN_RUNNER_CMD = "dr.bat";
 	private static final String NIX_RUNNER_CMD = "dr";
 	private final String KEY_EXPRESSION = "@KeyExpression";
+	private static final String prefixForGradle = "-P.";
+	private static final String prefixForAnt = "-D";
+	private static final String gradleDectionFileName = "build.gradle";
+	
+	
 	protected IProject project = null;	
 	protected Map<String, String> arguments = new HashMap<String, String>();	
 	protected Map<String, String> properties = null;
@@ -63,12 +68,20 @@ public class DrRunPerCommandLine {
 		this.properties = properties;
 	}
 	
+	private String prefixForProperties(File buildDirectory) {
+		File gradleBuildFile = new File( buildDirectory, gradleDectionFileName);
+		if (gradleBuildFile.exists()) {
+			return prefixForGradle;
+		}		
+		return prefixForAnt;
+	}
+	
 	
 	/**
 	 * build a list of tokens to be issues to the process runner 
 	 * @return - a list of the commands for the process runner 
 	 */
-	private List<String> prepareForRun(List<String> expressions) {		 
+	private List<String> prepareForRun(String prefix, List<String> expressions) {		 
 		List<String> result = new ArrayList<String>();
 	
 		String runner_cmd = isRunningOnWindows() ? WIN_RUNNER_CMD : NIX_RUNNER_CMD;
@@ -90,7 +103,7 @@ public class DrRunPerCommandLine {
 		}
 		
 		if (expressions != null) {
-			String rangeExpression = "-Drange=" + toString( expressions, '+');
+			String rangeExpression = prefix + "range=" + toString( expressions, '+');
 			result.add(rangeExpression);
 			combinedMap.put( KEY_EXPRESSION, toString( expressions, ','));
 		}
@@ -108,8 +121,9 @@ public class DrRunPerCommandLine {
 	 * @throws TbRunException - arrgh
 	 */
 	public void run( String finalArtifact, List<String> expressions, String skipExpression, String target, File buildFile, File buildDirectory, ProcessNotificationListener monitor) throws TbRunException{
+		String prefix = prefixForProperties(buildDirectory);
 		try {
-			List<String> cmd = prepareForRun( expressions);
+			List<String> cmd = prepareForRun( prefix, expressions);
 			
 			if (buildFile != null)  {			
 				cmd.add( "-buildfile");
@@ -124,13 +138,13 @@ public class DrRunPerCommandLine {
 			Map<String, String> propertyOverrides = DevrockPlugin.instance().virtualEnviroment().getPropertyOverrrides();
 			if (propertyOverrides != null) {
 				for (Entry<String, String> entry : propertyOverrides.entrySet()) {
-					cmd.add( "-D" + entry.getKey() + "=" + entry.getValue());
+					cmd.add( prefix + entry.getKey() + "=" + entry.getValue());
 				}
 			}
 			
 			// skip 
 			if (skipExpression != null && skipExpression.length() > 0) {
-				cmd.add( "-Dskip=" + skipExpression);
+				cmd.add( prefix + "skip=" + skipExpression);
 			}
 			
 			// environment variables  

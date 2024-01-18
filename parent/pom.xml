@@ -1,16 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-Copyright BRAINTRIBE TECHNOLOGY GMBH, Austria, 2002-2022
-
-This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along with this library; See http://www.gnu.org/licenses/.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><!--
+ ============================================================================
+ BRAINTRIBE TECHNOLOGY GMBH - www.braintribe.com
+ Copyright BRAINTRIBE TECHNOLOGY GMBH, Austria, 2002-2018 - All Rights Reserved
+ It is strictly forbidden to copy, modify, distribute or use this code without written permission
+ To this file the Braintribe License Agreement applies.
+ ============================================================================
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.braintribe.devrock.eclipse</groupId>
     <artifactId>parent</artifactId>
@@ -20,7 +15,7 @@ You should have received a copy of the GNU Lesser General Public License along w
         <major>1</major>
         <minor>0</minor>
         <nextMinor>1</nextMinor>
-        <revision>1</revision>
+        <revision>1-pc</revision>
         <java.version>1.8</java.version>
         <V.com.braintribe.devrock.eclipse>[${major}.${minor},${major}.${nextMinor})</V.com.braintribe.devrock.eclipse>
         <V.com.braintribe.archives>[2.0,2.1)</V.com.braintribe.archives>
@@ -30,13 +25,5 @@ You should have received a copy of the GNU Lesser General Public License along w
         <V.com.braintribe.testing>[2.0,2.1)</V.com.braintribe.testing>
         <V.com.braintribe.wire>[2.0,2.1)</V.com.braintribe.wire>
         <V.com.braintribe.xml>[2.0,2.1)</V.com.braintribe.xml>
-    </properties>
-    <licenses>
-        <license>
-            <name>GNU Lesser General Public License v3.0</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
-            <distribution>repo</distribution>
-            <comments>A free software license that allows users to run, study, share, and modify the software.</comments>
-        </license>
-    </licenses>   
+    </properties>   
 </project>
