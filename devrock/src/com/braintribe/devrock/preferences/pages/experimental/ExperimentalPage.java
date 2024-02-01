@@ -20,11 +20,15 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
+import com.braintribe.devrock.api.ui.editors.AbstractEditor;
 import com.braintribe.devrock.api.ui.editors.BooleanEditor;
+import com.braintribe.devrock.api.ui.editors.EditorWithDefault;
+import com.braintribe.devrock.api.ui.editors.FileEditor;
 import com.braintribe.devrock.bridge.eclipse.environment.BasicStorageLocker;
 import com.braintribe.devrock.plugin.DevrockPlugin;
 
@@ -40,6 +44,8 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 	private BooleanEditor allowZedToPurgeExcessDependencies;
 
 	private BooleanEditor addStorageLockerDataToWorkspaceExport;
+	
+	private EditorWithDefault<String> customFileEditor;
 	
 	public ExperimentalPage() {
 		setDescription(DEVROCK_PREFERENCES);				
@@ -153,10 +159,37 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		boolean zedAlloPurgeValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_ALLOW_PURGE, false);
 		allowZedToPurgeExcessDependencies.setSelection(zedAlloPurgeValue);
 		
+		customFileEditor = new EditorWithDefault<>();		
+		customFileEditor.setBigFont(bigFont);
+		customFileEditor.setLabelToolTip("use default velocity template (internal)");
+		customFileEditor.setEditToolTip("if on, the internal template is used, if off, a custom template can be used");		
+		customFileEditor.setEditorSupplier( this::getFileEditor);
+		customFileEditor.setUseCustomLabel("custom velocity template");
+		customFileEditor.setUseDefaultLabel("internal velocity template");
+		
+		Composite customTargetEditorComposite = customFileEditor.createControl(zedChoicesComposite, "template for comparison result");
+		customTargetEditorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
+		
+		// 
+		boolean useInternalTemplate = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_USE_INTERAL_CMP_TEMPLATE, true);
+		customFileEditor.setDefaultSelection( useInternalTemplate);
+		
+		String externalTemplate = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ZED_EXTERNAL_CMP_TEMPLATE, "");		
+		customFileEditor.setSelection( externalTemplate);
+		
 		composite.pack();
 		return composite;
 	}
 
+
+	private AbstractEditor<String> getFileEditor(Shell shell) {
+		FileEditor editor = new FileEditor( shell);		
+		editor.setLabelToolTip( "use an alternative velocity template");
+		editor.setEditToolTip( "select a custom velocity template");
+		editor.setExtensions( new String[] {"*.vm"});
+		return editor;
+	}
+	
 
 	@Override
 	public void dispose() {
@@ -177,6 +210,9 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		
 		// zed 
 		storageLocker.setValue(StorageLockerSlots.SLOT_ZED_ALLOW_PURGE, allowZedToPurgeExcessDependencies.getSelection());
+		storageLocker.setValue(StorageLockerSlots.SLOT_ZED_USE_INTERAL_CMP_TEMPLATE, customFileEditor.getDefaultSelection());
+		storageLocker.setValue(StorageLockerSlots.SLOT_ZED_EXTERNAL_CMP_TEMPLATE, customFileEditor.getSelection());
+		
 		DevrockPlugin.instance().broadcastPreferencesChanged();
 	}
 

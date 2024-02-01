@@ -333,6 +333,22 @@ public class ViewLabelProvider extends CellLabelProvider implements IStyledLabel
 
 	private Pair<String, List<StyledTextSequenceData>> getStyledTextForClass(ClassNode node) {
 		List<Pair<String,List<StyledTextSequenceData>>> pairs = new ArrayList<>();		
+		ClassEntity classEntity = node.getEntity();
+		AccessModifier accessModifier = classEntity.getAccessModifier();
+		pairs.add( styledStringStyler.build( accessModifier.name().toLowerCase(), STYLER_STANDARD));
+		pairs.add( styledStringStyler.build( " ", STYLER_STANDARD));
+		
+		boolean abstractNature = classEntity.getAbstractNature();
+		if (abstractNature) {
+			pairs.add( styledStringStyler.build( "abstract ", STYLER_STANDARD));
+		}
+		
+		boolean staticNature = classEntity.getStaticNature();		
+		if (staticNature) {
+			pairs.add( styledStringStyler.build( "static", STYLER_STANDARD));
+			pairs.add( styledStringStyler.build( " ", STYLER_STANDARD));
+		}
+		
 		pairs.add( styledStringStyler.build(node.getName(), STYLER_EMPHASIS));
 		return styledStringStyler.merge(pairs);		
 	}

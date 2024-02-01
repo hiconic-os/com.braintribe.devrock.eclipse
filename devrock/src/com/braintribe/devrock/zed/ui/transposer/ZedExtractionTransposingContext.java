@@ -11,10 +11,19 @@
 // ============================================================================
 package com.braintribe.devrock.zed.ui.transposer;
 
-public class ZedExtractionTransposingContext {
+import java.util.Map;
+
+import com.braintribe.devrock.zarathud.model.extraction.subs.ContainerNode;
+import com.braintribe.zarathud.model.forensics.findings.ComparisonIssueType;
+
+public class ZedExtractionTransposingContext implements HasContainerTokens {
 
 	private boolean detailed = true;
-
+	
+	private ExtractionTransposer baseExtractionTransposer;
+	private ExtractionTransposer otherExtractionTransposer;
+	private ComparisonTransposer comparisonExtractionTransposer; 
+	
 	public boolean isDetailed() {
 		return detailed;
 	}
@@ -22,6 +31,77 @@ public class ZedExtractionTransposingContext {
 	public void setDetailed(boolean detailed) {
 		this.detailed = detailed;
 	}
+
+	public ExtractionTransposer getBaseExtractionTransposer() {
+		return baseExtractionTransposer;
+	}
+
+	public void setBaseExtractionTransposer(ExtractionTransposer baseExtractionTransposer) {
+		this.baseExtractionTransposer = baseExtractionTransposer;
+	}
+
+	public ExtractionTransposer getOtherExtractionTransposer() {
+		return otherExtractionTransposer;
+	}
+
+	public void setOtherExtractionTransposer(ExtractionTransposer otherExtractionTransposer) {
+		this.otherExtractionTransposer = otherExtractionTransposer;
+	}
+
+	public ComparisonTransposer getComparisonExtractionTransposer() {
+		return comparisonExtractionTransposer;
+	}
+
+	public void setComparisonExtractionTransposer(ComparisonTransposer comparisonExtractionTransposer) {
+		this.comparisonExtractionTransposer = comparisonExtractionTransposer;
+	}
+	
+	public ContainerNode identifyNode( Map<String,ContainerNode> map, ComparisonIssueType cit) {
+		switch (cit) {
+		
+		case missingAnnotations:
+		case surplusAnnotations:
+			return map.get( ANNOTATIONS);
+		case missingEnumValues:
+		case surplusEnumValues:
+			return map.get( VALUES);
+		case missingFields:
+		case surplusFields:
+			return map.get( FIELDS);
+		case missingImplementedInterfaces:
+		case surplusImplementedInterfaces:
+			return map.get( IMPLEMENTED_INTERFACES);
+		case missingImplementingClasses:
+		case surplusImplementingClasses:
+			return map.get( IMPLEMENTING_TYPES);
+		case missingInCollection:
+		case surplusInCollection:
+			break;
+		case missingMethodArguments:
+		case surplusMethodArguments:
+			return map.get( ARGUMENT_TYPES);		
+		case missingMethodExceptions:
+		case surplusMethodExceptions:
+			return map.get(THROWN_EXCEPTIONS);
+		case missingMethods:
+		case surplusMethods:
+			return map.get( METHODS);
+		case missingSubInterfaces:
+		case surplusSubInterfaces:
+			break;			
+		case missingSubTypes:
+		case surplusSubTypes:
+			return map.get( DERIVED_TYPES);
+		case missingSuperInterfaces:		
+		case surplusSuperInterfaces:
+			return map.get( SUPER_INTERFACES);			
+		default:
+			break;
+		
+		}
+		return null;
+	}
+	
 	
 	
 }

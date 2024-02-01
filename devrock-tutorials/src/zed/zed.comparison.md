@@ -241,5 +241,58 @@ If it's a single, directly attributable issue - as here with a 'static' modifier
 ![issues-selection-1](./images/comparison.viewer.issue.detail.2.png "modifier mismatch")
 
 
+## generating a report
+The viewer also allows you to retrieve a textual report. A template for a mark-down formatted report is built in, but you can specify any other format, accessing the data via org.apache.velocity syntax. 
 
+> To specify an external template for the report, go to preferences->devrock->experimental features->zed's choices->report template
+
+The internal template is rather small, so it can be listed here to show a reference of how you can access the data via velocity 
+
+```
+#[[ # Comparison result ]]#
+
+Base artifact  : ```$report.baseArtifact```
+
+Other artifact : ```$report.comparedArtifact```
+
+Date : *$comparisonDate*
+
+Rating based on ruleset for semantic versioning level : $report.semanticVersioningLevel
+
+Found $report.numberOfDifferences issues in $report.numberOfOwners compilation units
+
+#foreach ($differences in $report.ownedDifferences)  
+**compilation unit** : ```$differences.relevantOwner```
+
+    #foreach ($dif in $differences.differences) 
+	
+>       issue : $dif.issue
+>       rating : $dif.rating
+>        
+        #if ($dif.base)      
+>       base: $dif.base
+        #end
+>        
+        #if ($dif.missingInBase)
+>        $dif.labelForBaseData : 
+         #foreach ($miss in $dif.missingInBase)          
+>               $miss
+          #end
+         #end
+>        
+        #if ($dif.other)      
+>       other: $dif.other
+        #end
+>       
+        #if ($dif.surplusInOther)
+>         $dif.labelForOtherData : 
+         #foreach ($surp in $dif.surplusInOther)          
+>               $surp
+          #end
+         #end
+	 
+    #end
+
+#end
+```
 

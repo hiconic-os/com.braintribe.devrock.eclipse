@@ -51,6 +51,7 @@ import com.braintribe.devrock.zarathud.model.extraction.ExtractionNode;
 import com.braintribe.devrock.zarathud.model.extraction.subs.ContainerNode;
 import com.braintribe.devrock.zed.api.comparison.ComparisonIssueClassification;
 import com.braintribe.devrock.zed.ui.ZedViewingContext;
+import com.braintribe.devrock.zed.ui.comparison.renderer.ZedComparisonResultRenderer;
 import com.braintribe.devrock.zed.ui.transposer.ComparisonTransposer;
 import com.braintribe.devrock.zed.ui.transposer.ExtractionTransposer;
 import com.braintribe.devrock.zed.ui.transposer.HasContainerTokens;
@@ -60,7 +61,9 @@ import com.braintribe.devrock.zed.ui.viewer.comparison.DetailRequestListener;
 import com.braintribe.devrock.zed.ui.viewer.extraction.ExtractionViewer;
 import com.braintribe.devrock.zed.ui.viewer.extraction.ZedExtractionViewerContext;
 import com.braintribe.devrock.zed.ui.viewer.model.ViewLabelProvider;
+import com.braintribe.gm.model.reason.Maybe;
 import com.braintribe.model.generic.GenericEntity;
+import com.braintribe.utils.IOTools;
 import com.braintribe.zarathud.model.data.Artifact;
 import com.braintribe.zarathud.model.data.ClassOrInterfaceEntity;
 import com.braintribe.zarathud.model.data.TypeReferenceEntity;
@@ -166,8 +169,8 @@ public class ZedComparisonResultViewer extends DevrockDialog implements IDisposa
         saveNotes.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
         saveNotes.setToolTipText("Save the found issues as release notes");
         saveNotes.addSelectionListener(this);               
-        // for now, it's deactivated
-        saveNotes.setEnabled(false);
+       
+       
         
         savePrints = new Button(buttons, SWT.NONE);
         savePrints.setImage(saveFingerprintsImage);
@@ -177,10 +180,13 @@ public class ZedComparisonResultViewer extends DevrockDialog implements IDisposa
 
         comparisonExtractionContext = new ZedExtractionTransposingContext();
         comparisonExtractionContext.setDetailed(false);
-        
+        comparisonExtractionContext.setBaseExtractionTransposer(baseExtractionTransposer);
+        comparisonExtractionContext.setOtherExtractionTransposer(otherExtractionTransposer);
+        comparisonExtractionContext.setComparisonExtractionTransposer(comparisonExtractionTransposer);
         
         
         ZedExtractionTransposingContext extractionContext = new ZedExtractionTransposingContext();
+        
         //
     	// comparison fingerprint data 
     	//
@@ -386,8 +392,16 @@ public class ZedComparisonResultViewer extends DevrockDialog implements IDisposa
 	public void widgetSelected(SelectionEvent arg0) {
 		Widget widget = arg0.widget;
 		
-		if (widget == saveNotes) {
-			// TODO : impl
+		if (widget == saveNotes) {		
+			Maybe<String> reportAsStringMb = new ZedComparisonResultRenderer().renderReport(context);
+			if (reportAsStringMb.isSatisfied()) {
+				// select file 
+				
+				String reportAsString = reportAsStringMb.get();
+				store( reportAsString);
+				
+				System.out.println( reportAsString);
+			}
 		}
 		else if (widget == savePrints) {
 			store();
@@ -406,6 +420,40 @@ public class ZedComparisonResultViewer extends DevrockDialog implements IDisposa
 		}
 	}
 	
+	private void store(String reportAsString) {
+		// select file 
+		Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
+
+		String preselected = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_ZED_COMPARISON_DUMP_LAST_FILE, null);
+		
+		FileDialog fd = new FileDialog(shell, SWT.SAVE);
+		if (preselected != null) {
+			File lastFile = new File( preselected);								
+			fd.setFileName(lastFile.getName());
+			fd.setFilterPath( lastFile.getParent());
+		}
+		String templateExtension = context.getUsedTemplateExtension();
+		if (templateExtension != null && !templateExtension.equals( "vm")) {
+			fd.setFilterExtensions( new String[] {"*." + templateExtension});
+		}
+		else {
+			fd.setFilterExtensions( new String[] {"*.md"});
+		}
+		
+		String selectedFile = fd.open();
+		
+		if (selectedFile == null) {
+			return;
+		}
+		File file = new File( selectedFile);
+		try {
+			IOTools.spit(file, reportAsString, "UTF-8", false);
+		}
+		catch (Exception e) {
+			System.err.println("Cannot write to file");
+		}
+	}
+
 	/**
 	 * stores the passed {@link ZedViewingContext} into a {@link File} selected by the user 
 	 * @param context - the {@link ZedViewingContext} to store 
