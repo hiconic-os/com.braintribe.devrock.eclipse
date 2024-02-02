@@ -47,6 +47,10 @@ import com.braintribe.zarathud.model.forensics.FingerPrint;
 import com.braintribe.zarathud.model.forensics.ForensicsRating;
 import com.braintribe.zarathud.model.forensics.findings.ComparisonIssueType;
 
+/**
+ * renders the resulting comparison fingerprints to a velocity template to obtain a textual output
+ * @author pit
+ */
 public class ZedComparisonResultRenderer{
 	public final String template = "templates/report.vm";
 	public final String templateKey = "default";
@@ -62,6 +66,10 @@ public class ZedComparisonResultRenderer{
 		providerMap.put( templateKey, new StreambasedTemplateProvider( stream));		
 	}
 	
+	/**
+	 * @param context - the {@link ZedComparisonViewerContext}
+	 * @return - a {@link Maybe} containing the rendered template 
+	 */
 	public Maybe<String> renderReport(ZedComparisonViewerContext context) {
 		// 
 		renderer.setContextValue("context", "baseArtifact", context.getBaseArtifact().asString());
@@ -108,6 +116,11 @@ public class ZedComparisonResultRenderer{
 
 
 	
+	/**
+	 * actually build the instances for the template 
+	 * @param context - the {@link ZedComparisonViewerContext}
+	 * @return - the {@link Report}
+	 */
 	private Report buildReport(ZedComparisonViewerContext context) {
 		
 		Report report = new Report();
@@ -153,6 +166,12 @@ public class ZedComparisonResultRenderer{
 		
 	}
 
+	/**
+	 * @param context - {@link ZedComparisonViewerContext} 
+	 * @param ownerEntity - the'owning' entity, aka the compilation unit
+	 * @param fp - the {@link FingerPrint} to render
+	 * @return
+	 */
 	private Difference translateToDifference(ZedComparisonViewerContext context, ZedEntity ownerEntity, FingerPrint fp) {
 		Difference difference = new Difference();	
 		difference.setRelevantOwner( extractRelevantString(ownerEntity).get(0));
@@ -227,6 +246,12 @@ public class ZedComparisonResultRenderer{
 		return difference;
 	}
 	
+	/**
+	 * somewhat out of order - a annotation value mismatch (initializer value different for instance)
+	 * @param difference - the {@link Difference} as prepared 
+	 * @param entitySource - the {@link GenericEntity} in base (actually, it's a {@link AnnotationEntity})
+	 * @param entityComparisonTarget - the {@link GenericEntity} in other (actually, it's a {@link AnnotationEntity})
+	 */
 	private void enrichByAnnotationValueMismatch(Difference difference, GenericEntity entitySource, GenericEntity entityComparisonTarget) {
 		AnnotationEntity aeb = (AnnotationEntity) entitySource;
 		AnnotationEntity aeo = (AnnotationEntity) entityComparisonTarget;
@@ -241,6 +266,12 @@ public class ZedComparisonResultRenderer{
 		difference.getSurplusInOther().addAll(surplus);				
 	}
 	
+	/**
+	 * finding the difference 
+	 * @param baseMembers
+	 * @param otherMembers
+	 * @return - a {@link Pair} of the two differing values as String
+	 */ 
 	private Pair<List<String>, List<String>> compareAnnotationContainers(Map<String, AnnotationValueContainer> baseMembers, Map<String, AnnotationValueContainer> otherMembers) {
 		List<String> missing = new ArrayList<>();
 		List<String> surplus = new ArrayList<>();
