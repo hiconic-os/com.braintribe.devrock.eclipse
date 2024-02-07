@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<!--
  ============================================================================
  BRAINTRIBE TECHNOLOGY GMBH - www.braintribe.com
  Copyright BRAINTRIBE TECHNOLOGY GMBH, Austria, 2002-2018 - All Rights Reserved
@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.braintribe.devrock.eclipse</groupId>
     <artifactId>parent</artifactId>
-    <version>${major}.${minor}.${revision}</version>
+    <version>1.0.2-pc</version>
     <packaging>pom</packaging>
     <properties>
         <major>1</major>
