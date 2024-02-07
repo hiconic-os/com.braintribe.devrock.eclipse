@@ -112,6 +112,8 @@ public interface StorageLockerSlots {
 	String SLOT_ZED_COMPARISON_DUMP_LAST_FILE = "zed-comparison-last-selected-file";
 	String SLOT_ZED_COMPARISON_NOTES_LAST_FILE = "zed-release-notes-last-selected-file";
 	String SLOT_ZED_COMPARISON_NOTES_TEMPLATE = "zed-release-notes-template-file";
+	String SLOT_ZED_USE_INTERAL_CMP_TEMPLATE = "zed-use-internal-cmp-template";
+	String SLOT_ZED_EXTERNAL_CMP_TEMPLATE = "zed-external-cmp-template";
 	
 	// GF - currently not in use
 	String SLOT_GF_TEMP_DIR = "gf-temp-directory";

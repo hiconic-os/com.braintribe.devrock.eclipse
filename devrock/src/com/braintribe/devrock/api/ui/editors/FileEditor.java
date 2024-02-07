@@ -43,6 +43,7 @@ public class FileEditor extends AbstractEditor<String> implements ModifyListener
 	private ModifyListener listener;
 	private boolean displayBorder = false;	
 	private String selected;
+	private File selectedFile;
 	
 	private String [] extensions = new String [] {"*.yaml"};
 		
@@ -57,8 +58,9 @@ public class FileEditor extends AbstractEditor<String> implements ModifyListener
 
 	@Configurable
 	public void setSelection( String selection) {
-		start = selection;
-		selected = selection;
+		selectedFile = new File( selection);
+		start = selectedFile.getName();
+		selected = selection;		
 		if (text != null && start != null) {
 			text.setText( start);
 		}
@@ -88,7 +90,8 @@ public class FileEditor extends AbstractEditor<String> implements ModifyListener
 
 	public String scanForFile(Shell shell) {
 		FileDialog dialog = new FileDialog(shell);
-		String file = resolver != null ? resolver.resolve(text.getText()) : text.getText();	
+	
+		String file = resolver != null ? resolver.resolve(selectedFile.getAbsolutePath()) : selectedFile.getAbsolutePath();	
 		if (file != null) {
 			dialog.setFileName( file);
 			dialog.setFilterExtensions( extensions);

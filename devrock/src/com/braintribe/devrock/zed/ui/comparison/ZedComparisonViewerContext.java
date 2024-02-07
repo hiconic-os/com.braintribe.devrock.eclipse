@@ -23,6 +23,7 @@ public class ZedComparisonViewerContext {
 	private Artifact otherArtifact;
 	private List<FingerPrint> fingerPrints;
 	private SemanticVersioningLevel semanticComparisonLevel;
+	private String usedTemplateExtension;
 	
 	public Artifact getBaseArtifact() {
 		return baseArtifact;
@@ -47,6 +48,12 @@ public class ZedComparisonViewerContext {
 	}
 	public void setSemanticComparisonLevel(SemanticVersioningLevel semanticComparisonLevel) {
 		this.semanticComparisonLevel = semanticComparisonLevel;
+	}
+	public String getUsedTemplateExtension() {
+		return usedTemplateExtension;
+	}
+	public void setUsedTemplateExtension(String usedTemplateExtension) {
+		this.usedTemplateExtension = usedTemplateExtension;
 	}
 	
 	

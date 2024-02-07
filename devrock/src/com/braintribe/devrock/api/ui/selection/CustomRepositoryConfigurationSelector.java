@@ -134,7 +134,9 @@ public class CustomRepositoryConfigurationSelector {
 		control = customConfiguration.createControl(composite, "use alternative configuration");		
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		String customConfigurationValue = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AC_CUSTOM_CONFIGURATION, null);
-		customConfiguration.setSelection( customConfigurationValue);
+		if (customConfigurationValue != null) {
+			customConfiguration.setSelection( customConfigurationValue);
+		}
 		
 		customConfiguration.addListener( new ModificationNotificationListener() {
 			

@@ -1,0 +1,45 @@
+#[[ # Comparison result ]]#
+
+Base artifact  : ```$report.baseArtifact```
+
+Other artifact : ```$report.comparedArtifact```
+
+Date : *$comparisonDate*
+
+Rating based on ruleset for semantic versioning level : $report.semanticVersioningLevel
+
+Found $report.numberOfDifferences issues in $report.numberOfOwners compilation units
+
+#foreach ($differences in $report.ownedDifferences)  
+**compilation unit** : ```$differences.relevantOwner```
+
+    #foreach ($dif in $differences.differences) 
+	
+>       issue : $dif.issue
+>       rating : $dif.rating
+>        
+        #if ($dif.base)      
+>       base: $dif.base
+        #end
+>        
+        #if ($dif.missingInBase)
+>        $dif.labelForBaseData : 
+         #foreach ($miss in $dif.missingInBase)          
+>               $miss
+          #end
+         #end
+>        
+        #if ($dif.other)      
+>       other: $dif.other
+        #end
+>       
+        #if ($dif.surplusInOther)
+>         $dif.labelForOtherData : 
+         #foreach ($surp in $dif.surplusInOther)          
+>               $surp
+          #end
+         #end
+	 
+    #end
+
+#end

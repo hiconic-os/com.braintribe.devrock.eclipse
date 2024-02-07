@@ -241,5 +241,104 @@ If it's a single, directly attributable issue - as here with a 'static' modifier
 ![issues-selection-1](./images/comparison.viewer.issue.detail.2.png "modifier mismatch")
 
 
+## generating a report
+The viewer also allows you to retrieve a textual report. A template for a mark-down formatted report is built in, but you can specify any other format, accessing the data via org.apache.velocity syntax. 
+
+> To specify an external template for the report, go to window -> preferences-> devrock -> experimental features -> zed's choices -> report template
+
+The internal template is rather small, so it can be listed here to show a reference of how you can access the data via velocity 
+
+```md
+#[[ # Comparison result ]]#
+
+Base artifact  : ```$report.baseArtifact```
+
+Other artifact : ```$report.comparedArtifact```
+
+Date : *$comparisonDate*
+
+Rating based on ruleset for semantic versioning level : $report.semanticVersioningLevel
+
+Found $report.numberOfDifferences issues in $report.numberOfOwners compilation units
+
+#foreach ($differences in $report.ownedDifferences)  
+**compilation unit** : ```$differences.relevantOwner```
+
+    #foreach ($dif in $differences.differences) 
+	
+>       issue : $dif.issue
+>       rating : $dif.rating
+>        
+        #if ($dif.base)      
+>       base: $dif.base
+        #end
+>        
+        #if ($dif.missingInBase)
+>        $dif.labelForBaseData : 
+         #foreach ($miss in $dif.missingInBase)          
+>               $miss
+          #end
+         #end
+>        
+        #if ($dif.other)      
+>       other: $dif.other
+        #end
+>       
+        #if ($dif.surplusInOther)
+>         $dif.labelForOtherData : 
+         #foreach ($surp in $dif.surplusInOther)          
+>               $surp
+          #end
+         #end	 
+    #end
+#end
+```
+
+### accessing zed's data from within the template
+
+The template uses a reduced class structure to access the data. 
 
 
+Report : main container 
+
+> baseArtifact 				: fully qualified name of the basis of comparison
+>
+> comparedArtifact 			: fully qualified name of the counterpart of the comparison
+>
+> comparisonDate			: date of the file's production 
+>
+> semanticVersioningLevel	: can be major, minor, revision : sets how zed should rate the issues found
+>
+> numberOfDifferences		: number of differences found 
+>
+> numberOfOwners			: number of owning compilation units (classes, interfaces, enums)
+>
+> rawDifferences			: a list of all differences, each a 'Difference' instance (see below)
+>
+> ownedDifferences			: a list of all 'owned differences', sorted by the owners' name, each a 'Differences' instance
+>
+
+Differences : container for a compilation unit
+
+> relevantOwner				: fully qualified name of the compilation unit (either direct place of issue or owner of a Method or Field or Annotation-attachement)
+>
+> rating					: the worst rating (as coalesced from the single 'Difference' instances)
+>
+> differences				: a list of the differences associated with the compiling unit, each a 'Difference' instance 
+>
+
+Difference : an actual difference as found by zed
+
+> relevantOwner				: fully qualified name of the compilation unit (either direct place of issue or owner of a Method or Field or Annotation-attachement)
+
+> issue						: the actual issue as reported by zed
+
+> rating 					: the rating of the issue 
+
+> base						: name/origin/location of the issue inside the base compilation unit (method, field)
+
+> other						: name/origin/location of the issue inside hte other compilation unit (method, field)
+
+> missingInBase				: a list of String that can stand-in for different values or missing values (if contains multiple values) in the base artifact
+
+> surplusInOther			: a list of String that can stand-in for different values or surplus values (if contains multiple values)in the compared artifact
