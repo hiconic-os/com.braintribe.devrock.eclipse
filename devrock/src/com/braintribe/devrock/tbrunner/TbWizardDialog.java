@@ -589,6 +589,9 @@ public class TbWizardDialog extends DevrockDialog implements SelectionListener, 
 		File selectedBuildFile = null;
 		if (!customFileEditor.isDefaultSelected()) {
 			selectedBuildFile = new File( customFileEditor.getSelection());
+			if (!selectedBuildFile.isAbsolute())  {
+				selectedBuildFile = new File( buildWorkingDirectory, selectedBuildFile.getName()); 	
+			}
 		}
 		
 		String selectedBuildTarget = null;

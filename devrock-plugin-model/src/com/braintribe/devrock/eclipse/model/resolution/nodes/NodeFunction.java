@@ -21,7 +21,7 @@ import com.braintribe.model.generic.reflection.EnumTypes;
  *
  */
 public enum NodeFunction implements EnumBase{
-	standard, imports, parent, depender, terminal, clash, clashWinner, clashLoser, dependency;
+	standard, imports, import_owning_parent, parent, depender, terminal, clash, clashWinner, clashLoser, dependency;
 	
 	
 	final EnumType T = EnumTypes.T(NodeFunction.class);

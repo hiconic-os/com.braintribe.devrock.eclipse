@@ -170,7 +170,8 @@ Export-Package: com.braintribe.common.potential,com.braintribe.devrock
  ction.type;uses:="com.braintribe.model.generic.reflection",com.braint
  ribe.model.generic.reflection.type.simple;uses:="com.braintribe.model
  .generic.reflection",com.braintribe.model.resource;uses:="com.braintr
- ibe.model.generic.reflection",com.braintribe.model.version;uses:="com
- .braintribe.model.generic,com.braintribe.model.generic.reflection",co
- m.braintribe.ve.api;uses:="com.braintribe.common.attribute"
+ ibe.model.generic.reflection",com.braintribe.model.resource.source,co
+ m.braintribe.model.version;uses:="com.braintribe.model.generic,com.br
+ aintribe.model.generic.reflection",com.braintribe.ve.api;uses:="com.b
+ raintribe.common.attribute"
 
