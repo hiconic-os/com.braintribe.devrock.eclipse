@@ -59,6 +59,7 @@ import com.braintribe.devrock.zarathud.model.context.ConsoleOutputVerbosity;
 import com.braintribe.devrock.zarathud.runner.api.ZedWireRunner;
 import com.braintribe.devrock.zarathud.runner.wire.ZedRunnerWireTerminalModule;
 import com.braintribe.devrock.zarathud.runner.wire.contract.ZedRunnerContract;
+import com.braintribe.devrock.zed.commons.UnresolveTypeReasonsLocalizer;
 import com.braintribe.devrock.zed.forensics.fingerprint.register.RatingRegistry;
 import com.braintribe.devrock.zed.ui.ZedResultViewer;
 import com.braintribe.devrock.zed.ui.ZedViewingContext;
@@ -129,6 +130,13 @@ public interface ZedRunnerTrait {
 		ModuleForensicsResult moduleForensicsResult = zedWireRunner.moduleForensicsResult();
 		RatingRegistry activeRatingsRegistry = zedWireRunner.ratingRegistry();
 		
+		
+		
+		
+		List<Reason> unresolvableTypeReferences = zedWireRunner.unresolvableTypeReferences();
+		UnresolveTypeReasonsLocalizer.conceptualizeUnresolvableTypeReasons( unresolvableTypeReferences);
+				
+		
 		// build context for displaying
 		ZedViewingContext viewingContext = new ZedViewingContext();
 		
@@ -140,6 +148,7 @@ public interface ZedRunnerTrait {
 		viewingContext.setModuleForensicsResult(moduleForensicsResult);
 		viewingContext.setWorstRating( analysisData.first);
 		viewingContext.setIssues( analysisData.second);
+		viewingContext.setUnresolvableTypeReferences(unresolvableTypeReferences);
 		
 		// gm non-compatible
 		viewingContext.setRatingRegistry( activeRatingsRegistry);				
@@ -185,6 +194,9 @@ public interface ZedRunnerTrait {
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor) {					
 					ZedWireRunner zedWireRunner = ZedRunnerTrait.runExtraction(cprContext);
+					List<Reason> unresolvableTypeReferences = zedWireRunner.unresolvableTypeReferences();
+					UnresolveTypeReasonsLocalizer.conceptualizeUnresolvableTypeReasons(unresolvableTypeReferences, cprContext.getTerminalClassesDirectoryNames());
+					
 					displayZedAnalysisResult(project.getName(), zedWireRunner, project);
 					monitor.done();
 					return Status.OK_STATUS;

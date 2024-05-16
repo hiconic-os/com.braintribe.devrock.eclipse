@@ -14,10 +14,14 @@ package com.braintribe.devrock.arb.builder;
 import java.io.File;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.IJavaProject;
@@ -45,12 +49,15 @@ public class ArtifactReflectionBuilder extends IncrementalProjectBuilder {
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 		
+		boolean useIncrementalBuilds = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_BUILDER_AR_INCREMENTAL_ALSO, false);
+		
 				
 		// from Ralf : only full builds are to be executed..
-		if (kind != IncrementalProjectBuilder.FULL_BUILD) {
+		if (!useIncrementalBuilds && kind != IncrementalProjectBuilder.FULL_BUILD) {
 			return null;
 		}
-		log.debug("called via builder integration: full build");
+		log.debug("called via builder integration: " + ((kind == IncrementalProjectBuilder.FULL_BUILD) ? "full build" : "incremental build"));
+		
 		build( project);
 		
 		return null;
@@ -76,8 +83,9 @@ public class ArtifactReflectionBuilder extends IncrementalProjectBuilder {
 		
 		// arb output folder is a sibling of the java project's output folder..
 		File binaryOutputFolder;
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		try {
-			binaryOutputFolder = ResourcesPlugin.getWorkspace().getRoot().getFile( javaProject.getOutputLocation()).getRawLocation().toFile();
+			binaryOutputFolder = workspace.getRoot().getFile( javaProject.getOutputLocation()).getRawLocation().toFile();
 		} catch (JavaModelException e) {
 			String msg = "cannot access binary output folder of :" + project.getName();
 			ArtifactReflectionBuilderStatus status = new ArtifactReflectionBuilderStatus(msg, e);
@@ -91,8 +99,22 @@ public class ArtifactReflectionBuilder extends IncrementalProjectBuilder {
 		
 		ArtifactReflectionGenerator generator = new ArtifactReflectionGenerator();	
 		Maybe<Void> maybe = generator.generate(projectFolder, arbOutputFolder);
-		if (maybe.isSatisfied())
+		if (maybe.isSatisfied()) {
+			// check.. 
+			boolean refreshAfterBuilds = DevrockPlugin.instance().storageLocker().getValue( StorageLockerSlots.SLOT_BUILDER_AR_REFRESH_POST_BUILD, false);
+			if ( refreshAfterBuilds) {
+				IPath path = IPath.fromFile(arbOutputFolder);
+				IFile ifile= workspace.getRoot().getFileForLocation( path);
+				try {
+					ifile.refreshLocal(IResource.DEPTH_INFINITE, null);
+				} catch (CoreException e) {
+					String msg = "error broadcasting changes on project [" + project.getName() + "] (" + projectFolder.getAbsolutePath() + "," + binaryOutputFolder.getAbsolutePath() +") : " + e.getLocalizedMessage();
+					ArtifactReflectionBuilderStatus status = new ArtifactReflectionBuilderStatus(msg, IStatus.ERROR);
+					ArtifactReflectionBuilderPlugin.instance().log(status);
+				}
+			}		
 			return;
+		}
 		
 		String msg = "error while running artifact reflection generator on project [" + project.getName() + "] (" + projectFolder.getAbsolutePath() + "," + binaryOutputFolder.getAbsolutePath() +") : " + maybe.whyUnsatisfied().stringify();
 		ArtifactReflectionBuilderStatus status = new ArtifactReflectionBuilderStatus(msg, IStatus.ERROR);

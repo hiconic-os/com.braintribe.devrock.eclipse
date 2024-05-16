@@ -12,7 +12,6 @@
 package com.braintribe.devrock.api.ui.editors;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

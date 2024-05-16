@@ -47,6 +47,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 	private final Image workspaceImportImage;
 	private Font bigFont;
 	private BooleanEditor activateAutoWorkspaceUpdate;
+	private BooleanEditor activateDependerUpdate;
 	private BooleanEditor selectiveWorkspaceUpdate;	
 	private BooleanEditor requireHigherVersionInFlexibleAssignment;
 	private IntegerEditor maxResultInRemoteDependencyImport;
@@ -94,12 +95,38 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		
 		// AC stuff 
 		activateAutoWorkspaceUpdate = new BooleanEditor();
-		activateAutoWorkspaceUpdate.setLabelToolTip( "Changes the behavior of the workspace resource change listener");
+		activateAutoWorkspaceUpdate.setLabelToolTip( "Activates a workspace resource change listener to react on changes");
 		activateAutoWorkspaceUpdate.setEditToolTip( "If checked, the containers will react to changes of the workspace, otherwise manual synchronizing is required");
+		activateAutoWorkspaceUpdate.setSelectionListener( new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {		
+				Boolean selection = activateAutoWorkspaceUpdate.getSelection();
+				if (Boolean.FALSE.equals(selection)) {
+					activateDependerUpdate.setEnabled( false);
+				}
+				else {
+					activateDependerUpdate.setEnabled( true);
+				}
+			}
+			
+		});
 		Composite control = activateAutoWorkspaceUpdate.createControl(choicesComposite, "Automatically update containers on detected changes in workspace");
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean autoUpdate = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AUTO_UPDATE_WS, true);
 		activateAutoWorkspaceUpdate.setSelection( autoUpdate);
+		
+		activateDependerUpdate = new BooleanEditor();
+		activateDependerUpdate.setLabelToolTip( "Changes the behavior of the activated workspace resource change listener");
+		activateDependerUpdate.setEditToolTip( "If checked, the containers will react to changes of the dependers of changed projects in the workspace, otherwise the standard automatic behavior is used");
+		control = activateDependerUpdate.createControl(choicesComposite, "Automatically update containers of the dependers on detected project changes in workspace");
+		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		boolean autoDependerUpdate = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER, false);
+		activateDependerUpdate.setSelection( autoDependerUpdate);
+		if (!autoUpdate) {
+			activateDependerUpdate.setEnabled(false);
+		}
+		
 		
 		selectiveWorkspaceUpdate = new BooleanEditor();
 		selectiveWorkspaceUpdate.setLabelToolTip("Changes the behavior of the default workspace sync");
@@ -210,6 +237,14 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 
 		boolean activateAutoUpdate = activateAutoWorkspaceUpdate.getSelection();
 		storageLocker.setValue(StorageLockerSlots.SLOT_AUTO_UPDATE_WS, activateAutoUpdate);
+		
+		if (!activateAutoUpdate) {
+			storageLocker.setValue(StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER, false);
+		}
+		else {		
+			boolean activateAutoDependerUpdate = activateDependerUpdate.getSelection();
+			storageLocker.setValue(StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER, activateAutoDependerUpdate);
+		}
 		
 		boolean selectiveUpdate = selectiveWorkspaceUpdate.getSelection();
 		storageLocker.setValue(StorageLockerSlots.SLOT_SELECTIVE_WS_SYNCH, selectiveUpdate);

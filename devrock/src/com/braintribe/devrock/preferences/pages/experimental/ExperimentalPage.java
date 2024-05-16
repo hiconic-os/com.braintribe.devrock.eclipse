@@ -39,13 +39,18 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 	private Font bigFont;
 	private BooleanEditor useTfNatureProjectIcons;
 	private BooleanEditor useTfNatureProjectBackground;
+	
 	private BooleanEditor useSelectiveWorkspaceImport;
 	private BooleanEditor useSelectiveWorkspaceExport;
+	
 	private BooleanEditor allowZedToPurgeExcessDependencies;
 
 	private BooleanEditor addStorageLockerDataToWorkspaceExport;
 	
 	private EditorWithDefault<String> customFileEditor;
+	
+	private BooleanEditor allowIncrementalReflectionBuilds;
+	private BooleanEditor refreshAfterBuilds;
 	
 	public ExperimentalPage() {
 		setDescription(DEVROCK_PREFERENCES);				
@@ -100,7 +105,35 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		boolean useTfNatureBackground = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_TF_NATURE_PROJECT_BACKGROUND,
 				false);
 		useTfNatureProjectBackground.setSelection(useTfNatureBackground);
-					
+		
+		// builder choices 
+		Composite builderChoicesComposite = new Composite( composite, SWT.NONE);
+		builderChoicesComposite.setLayout(layout);
+		builderChoicesComposite.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, true, 4, 1));
+		
+		Label builderChoicesLabel = new Label( builderChoicesComposite, SWT.NONE);
+		builderChoicesLabel.setText("Experimental builder choices");
+		builderChoicesLabel.setFont(bigFont);
+		builderChoicesLabel.setLayoutData(new GridData( SWT.LEFT, SWT.CENTER, false, false, 4, 1));
+		
+		allowIncrementalReflectionBuilds = new BooleanEditor();
+		allowIncrementalReflectionBuilds.setLabelToolTip( "Choose whether the artifact-reflection builder also reacts to incremental builds");
+		allowIncrementalReflectionBuilds.setEditToolTip("If not activated, it will react only to FULL builds, if activated additionally to INCREMENTAL builds");
+		control = allowIncrementalReflectionBuilds.createControl(builderChoicesComposite, "Artifact-reflection builder reacts to incremental builds");
+		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		boolean useIncrementatlBuildValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_BUILDER_AR_INCREMENTAL_ALSO, false);
+		allowIncrementalReflectionBuilds.setSelection(useIncrementatlBuildValue);
+		
+		refreshAfterBuilds = new BooleanEditor();
+		refreshAfterBuilds.setLabelToolTip( "Choose whether the artifact-reflection builder refreshes the its output folder");
+		refreshAfterBuilds.setEditToolTip("If not activated, Eclipse will not asked to refresh the output folder, if activated Eclipse will be notified");
+		control = refreshAfterBuilds.createControl(builderChoicesComposite, "Artifact-reflection builder refreshes its output folder after build");
+		control.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		boolean refreshAfterBuildValue = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_BUILDER_AR_REFRESH_POST_BUILD, false);
+		refreshAfterBuilds.setSelection(refreshAfterBuildValue);
+		
+		
+		
 		
 		// ws import choices 
 		Composite wsChoicesComposite = new Composite( composite, SWT.NONE);
@@ -202,6 +235,11 @@ public class ExperimentalPage extends PreferencePage implements IWorkbenchPrefer
 		// ui choices
 		storageLocker.setValue(StorageLockerSlots.SLOT_TF_NATURE_PROJECT_ICONS, useTfNatureProjectIcons.getSelection());
 		storageLocker.setValue(StorageLockerSlots.SLOT_TF_NATURE_PROJECT_BACKGROUND, useTfNatureProjectBackground.getSelection());
+		
+		// builders
+		storageLocker.setValue( StorageLockerSlots.SLOT_BUILDER_AR_INCREMENTAL_ALSO, allowIncrementalReflectionBuilds.getSelection());
+		storageLocker.setValue( StorageLockerSlots.SLOT_BUILDER_AR_REFRESH_POST_BUILD, refreshAfterBuilds.getSelection());
+		
 						
 		// ws import/export choices 
 		storageLocker.setValue(StorageLockerSlots.SLOT_WS_IMPORT_USE_SELECTIVE_EXPORT, useSelectiveWorkspaceExport.getSelection());

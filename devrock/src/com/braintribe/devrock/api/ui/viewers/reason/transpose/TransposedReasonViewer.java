@@ -77,7 +77,7 @@ public class TransposedReasonViewer {
 		else {
 			this.reasonNode = (ReasonNode) transposer.transpose( reason);	
 		}
-	}
+	}	
 
 	public Composite createControl( Composite parent, String tag) {
 		Composite composite = new Composite(parent, SWT.NONE);

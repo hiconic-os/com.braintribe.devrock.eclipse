@@ -20,12 +20,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.braintribe.devrock.ac.container.plugin.listener.ResourceChangeListener;
+import com.braintribe.devrock.ac.container.plugin.listener.CompoundResourceChangeListener;
+import com.braintribe.devrock.ac.container.plugin.listener.DefaultResourceChangeListener;
+import com.braintribe.devrock.ac.container.plugin.listener.ResourceChangeProtocoller;
 import com.braintribe.devrock.ac.container.registry.WorkspaceContainerRegistry;
 import com.braintribe.devrock.api.logging.LoggingCommons;
 import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
@@ -50,7 +53,8 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 	private static ArtifactContainerPlugin instance;
 	
 	private WorkspaceContainerRegistry containerRegistry = new WorkspaceContainerRegistry();
-	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
+	private IResourceChangeListener resourceChangeListener = new CompoundResourceChangeListener();
+	private ResourceChangeProtocoller resourceChangeProtocoller = new ResourceChangeProtocoller();
 	
 	private UiSupport uiSupport = new UiSupport();
 	
@@ -74,7 +78,8 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 		log.info("ArtifactContainerPlugin: starting : " + new Date());
 
 		// listener installation 
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE );
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE );		
+		//ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeProtocoller, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE );
 
 		// add additional initial setup here
 		DevrockPlugin.instance().addPreferencesChangeListener(instance);

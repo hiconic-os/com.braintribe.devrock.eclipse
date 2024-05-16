@@ -514,7 +514,7 @@ public class TransposedAnalysisArtifactViewer implements SelectionListener, IDou
 				showImports.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false, 4, 1));
 				showImports.addSelectionListener(this);
 			}
-			
+			/*
 			if (capShowImportDependers) {
 				showImportDependers = new Button( structualModes, SWT.CHECK);
 				showImportDependers.setText("show import dependers");
@@ -522,7 +522,7 @@ public class TransposedAnalysisArtifactViewer implements SelectionListener, IDou
 				showImportDependers.setLayoutData( new GridData( SWT.LEFT, SWT.CENTER, false, false, 4, 1));
 				showImportDependers.addSelectionListener(this);
 			}
-			
+			*/
 			
 			if (capShowParts) {
 				showParts = new Button( structualModes, SWT.CHECK);

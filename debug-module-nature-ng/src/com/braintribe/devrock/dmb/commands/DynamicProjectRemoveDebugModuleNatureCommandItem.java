@@ -81,7 +81,6 @@ public class DynamicProjectRemoveDebugModuleNatureCommandItem extends Contributi
 
 	@Override
 	public void dispose() {
-		image.dispose();
 		super.dispose();
 	}
 

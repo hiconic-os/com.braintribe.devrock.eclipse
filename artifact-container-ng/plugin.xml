@@ -81,6 +81,10 @@
          <!-- build selected projects or workspace -->
         <command categoryId="com.braintribe.devrock.ac.commands.category" defaultHandler="com.braintribe.devrock.ac.commands.BuildSelectedProjectsOrWorkspaceCommand" id="com.braintribe.devrock.ac.commands.BuildSelectedProjectsOrWorkspaceCommand" name="Refresh all containers of the selected projects or all in the workspace if none's selected"/>
         
+        <!-- build dependers of the selected projects -->
+		<!-- <command categoryId="com.braintribe.devrock.ac.commands.category" defaultHandler="com.braintribe.devrock.ac.commands.dynamic.DynamicBuildDependersCommandItem" id="com.braintribe.devrock.ac.commands.dynamic.DynamicBuildDependersCommandItem" name="Refresh all containers of projects that are dependers of the currelty selected projects"/> -->        
+        
+        
         <!-- build projects -->     
         <command categoryId="com.braintribe.devrock.ac.commands.category" defaultHandler="com.braintribe.devrock.ac.commands.BuildProjectCommand" id="com.braintribe.devrock.ac.commands.BuildProjectCommand" name="Refresh the containers of the selected project(s)"/>
         
@@ -174,7 +178,26 @@
                         </iterate>
                     </with>             
                 </visibleWhen>
-            </dynamic>	            
+            </dynamic>
+            <dynamic class="com.braintribe.devrock.ac.commands.dynamic.DynamicBuildDependersCommandItem" id="com.braintribe.devrock.ac.commands.dynamic.DynamicBuildDependersCommandItem">                                        
+                <visibleWhen>               
+                    <with
+                         variable="activeMenuSelection">
+                        <iterate>
+                            <or>                                                    
+                                <adapt type="org.eclipse.core.resources.IProject">
+                                    <test property="org.eclipse.core.resources.open" value="open"/> 
+                                </adapt>
+                                <adapt type="org.eclipse.core.resources.IResource">
+                                    <test property="org.eclipse.core.resources.open" value="open"/>
+                                </adapt>                                                                
+                                <adapt type="org.eclipse.jdt.core.IPackageFragment"/>
+                                <adapt type="org.eclipse.jdt.core.IPackageFragmentRoot"/>                                                                   
+                            </or>
+                        </iterate>
+                    </with>             
+                </visibleWhen>
+            </dynamic>	            			            
         </menuContribution>
                         
     </extension>

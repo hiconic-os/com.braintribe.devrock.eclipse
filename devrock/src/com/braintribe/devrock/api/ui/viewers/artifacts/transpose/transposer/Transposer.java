@@ -643,6 +643,7 @@ public class Transposer {
 			return node;
 		}
 		node = AnalysisNode.T.create();
+		
 		node.setSolutionIdentification(artifact);
 		node.setBackingSolution(artifact);
 
@@ -720,7 +721,7 @@ public class Transposer {
 			}
 			// check dep mgt
 		}
-		// if this is an import artifact, add dependers
+		// if this is an import artifact, add dependers (i.e. the artifacts that are using the import)
 		if (artifact.getImporters().size() > 0) {
 			node.setFunction(NodeFunction.imports);
 
@@ -863,6 +864,7 @@ public class Transposer {
 			AnalysisNode importNode = from(context, importDependency);
 			if (importNode != null) {
 				importNode.setFunction(NodeFunction.imports);
+				node.setFunction(NodeFunction.import_owning_parent);
 				node.setParentNode(importNode);
 				node.getChildren().add(importNode);
 			}
@@ -1079,7 +1081,7 @@ public class Transposer {
 				adNode.setFunction(NodeFunction.standard);
 				node.getChildren().add(adNode);
 			}
-			//
+			// if this artifact has an import in its declaration, add it
 			if (context.getShowImports()) {
 				attachImport(context, solution, node);
 			}
@@ -1151,15 +1153,13 @@ public class Transposer {
 		declaratorNode.setDeclaratorArtifact(declarator);
 		declaratorNode.setBackingDeclaratorArtifact(declarator);
 
-		AnalysisNode declaringNode = from(context, declarator);
+		//AnalysisNode declaringNode = from(context, declarator);
 
 		// check if we need to add the import to the parent...
 		// it's not a parent depender, i.e. the UNICODE should be different. How to mark it?	
-		attachDependers(context, Collections.singletonList(node.getBackingDependency()), declaringNode, NodeFunction.import_owning_parent);
-
-		
-
-		declaratorNode.getChildren().add(declaringNode);
+		//attachDependers(context, Collections.singletonList(node.getBackingDependency()), declaringNode, NodeFunction.import_owning_parent);
+	
+		//declaratorNode.getChildren().add(declaringNode);
 		node.getChildren().add(declaratorNode);
 	}
 

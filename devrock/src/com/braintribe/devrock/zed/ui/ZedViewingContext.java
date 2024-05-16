@@ -11,6 +11,7 @@
 // ============================================================================
 package com.braintribe.devrock.zed.ui;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
@@ -43,6 +44,7 @@ public class ZedViewingContext {
 	private ZedAnalyzerContext analyzerContext;
 	private Reason analyzerReturnReason;
 	private IProject project;
+	private List<Reason> unresolvableTypeReferences;
 	
 	/**
 	 * @return - the {@link Artifact} that has been analyzed
@@ -147,6 +149,18 @@ public class ZedViewingContext {
 	public void setProject(IProject project) {
 		this.project = project;
 	}
+	
+	/**
+	 * @return - a {@link List} of {@link Reason} detailing what type references could not be resolved
+	 */
+	public List<Reason> getUnresolvableTypeReferences() {
+		return unresolvableTypeReferences;
+	}
+	public void setUnresolvableTypeReferences(List<Reason> unresolvableTypeReferences) {
+		this.unresolvableTypeReferences = unresolvableTypeReferences;
+	}
+	
+	
 	
 	
 	

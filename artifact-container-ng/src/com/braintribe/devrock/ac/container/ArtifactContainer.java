@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -55,9 +56,7 @@ import com.braintribe.logging.Logger;
 import com.braintribe.model.artifact.analysis.AnalysisArtifact;
 import com.braintribe.model.artifact.analysis.AnalysisArtifactResolution;
 import com.braintribe.model.artifact.analysis.AnalysisDependency;
-import com.braintribe.model.artifact.analysis.AnalysisTerminal;
 import com.braintribe.model.artifact.compiled.CompiledArtifact;
-import com.braintribe.model.artifact.compiled.CompiledTerminal;
 import com.braintribe.model.artifact.consumable.Part;
 import com.braintribe.model.artifact.essential.VersionedArtifactIdentification;
 import com.braintribe.model.resource.FileResource;
@@ -82,7 +81,8 @@ public class ArtifactContainer implements IClasspathContainer {
 	
 	// 
 	private AnalysisArtifactResolution compileResolution;
-	private AnalysisArtifactResolution runtimeResolution;	
+	private AnalysisArtifactResolution runtimeResolution;
+	
 	private IClasspathEntry[] compileClasspathEntries;
 	private IClasspathEntry[] runtimeClasspathEntries;
 	
@@ -90,6 +90,9 @@ public class ArtifactContainer implements IClasspathContainer {
 	
 	private double lastProcessingTime;
 	private Map<AnalysisArtifact, IProject> projectDependencies;
+	
+	// simple set with all condensed artifact names of the dependencies
+	private Set<String> dependenciesSet; 
 	
 	private File outfile = new File("event-log.txt");
 
@@ -142,6 +145,17 @@ public class ArtifactContainer implements IClasspathContainer {
 	
 	public double getLastProcessingTime() {
 		return lastProcessingTime;
+	}
+	
+	/**
+	 * @return - a {@link Set} of the names of all dependencies (solutions of the resolution)
+	 */
+	public Set<String> getDependenciesSet() {
+		return dependenciesSet;
+	}
+	
+	public boolean containsDependency(String qualifiedName) {
+		return dependenciesSet.contains(qualifiedName);
 	}
 	
 	/**
@@ -203,6 +217,11 @@ public class ArtifactContainer implements IClasspathContainer {
 		return resolveClasspath(scope, pomFile);					
 	}
 	
+	/**
+	 * @param scope
+	 * @param pomFile
+	 * @return
+	 */
 	private AnalysisArtifactResolution resolveClasspath(ClasspathResolutionScope scope, File pomFile) {
 		Maybe<CompiledArtifact> caiMaybe = DevrockPlugin.mcBridge().readPomFile( pomFile);
 		if (caiMaybe.isUnsatisfied()) {
@@ -266,13 +285,20 @@ public class ArtifactContainer implements IClasspathContainer {
 	 * called via JDT for compilation 
 	 */
 	public IClasspathEntry[] getClasspathEntries( boolean calledByEclipse) {
-		String msg = "compile container called on [" + versionedArtifactIdentification.asString() + "]";
-		try {
-			System.err.println("logging compile container access on [" + versionedArtifactIdentification.asString() + "] to -> " + outfile.getAbsolutePath());
-			IOTools.spit( outfile,  msg + "\n", "UTF-8", true);
-		} catch (IOException e) {			
-			e.printStackTrace();
+		
+		IProject project = iJavaProject.getProject();		
+		long modificationStamp = project.getModificationStamp();
+		
+		if (log.isDebugEnabled()) {
+			String msg = "compile container called on [" + versionedArtifactIdentification.asString() + "]";
+			try {
+				log.debug("logging compile container access on [" + versionedArtifactIdentification.asString() + "(" + modificationStamp +")] to -> " + outfile.getAbsolutePath());
+				IOTools.spit( outfile,  msg + "\n", "UTF-8", true);
+			} catch (IOException e) {			
+				e.printStackTrace();
+			}
 		}
+		
 		
 		if (compileClasspathEntries == null || isStale(ClasspathResolutionScope.compile)) {			
 			long before = System.nanoTime();
@@ -280,24 +306,32 @@ public class ArtifactContainer implements IClasspathContainer {
 			long after = System.nanoTime();
 			lastProcessingTime = (after - before) / 1E6;
 			
+			// build the set of (groupId:artifactId) strings of all dependencies found in the solution 
+			dependenciesSet = compileResolution.getSolutions().stream().map( s -> s.getGroupId() + ":" + s.getArtifactId()).collect(Collectors.toSet());
+						
 			compileClasspathEntries = transposeResolutionToClasspath(compileResolution); 
 		}	
 		
 
 		// check if it's a tomcat nature thingi, then get the runtime classpath and build the tomcat stuff going
-		IProject project = iJavaProject.getProject();
 		if (NatureHelper.isTomcatArtifact( project)) {
-			msg = "calling runtime container on [" + versionedArtifactIdentification.asString() + "] as it's a tomcat project";
-			try {
-				System.err.println("logging calling runtime container on [" + versionedArtifactIdentification.asString() + "] to -> " + outfile.getAbsolutePath());
-				IOTools.spit( outfile,  msg + "\n", "UTF-8", true);
-			} catch (IOException e) {			
-				e.printStackTrace();
+			if (log.isDebugEnabled()) {
+				String msg = "calling runtime container on [" + versionedArtifactIdentification.asString() + "] as it's a tomcat project";
+				try {
+					log.debug("logging calling runtime container on [" + versionedArtifactIdentification.asString() + "] to -> " + outfile.getAbsolutePath());
+					IOTools.spit( outfile,  msg + "\n", "UTF-8", true);
+				} catch (IOException e) {			
+					e.printStackTrace();
+				}
 			}
 			getRuntimeClasspathEntries();			
 			// call the update on the web-classpath file
 			ArtifactContainerDevloaderUpdateExpert.updateTomcatDevloader(iJavaProject, runtimeClasspathEntries);
 		}
+		
+		// mark project  		
+		log.debug("*** assigned modification stamp to " + project.getName() + " : " + modificationStamp + "***");		
+		ArtifactContainerPlugin.instance().containerRegistry().acknowledgeContainerRefresh(project, modificationStamp);
 		
 		return compileClasspathEntries;
 	}
@@ -307,12 +341,14 @@ public class ArtifactContainer implements IClasspathContainer {
 	 * called via the IRuntimeClasspathEntryResolver
 	 */
 	public IClasspathEntry[] getRuntimeClasspathEntries() {
-		String msg = "runtime container called on [" + versionedArtifactIdentification.asString() + "]";
-		try {
-			System.err.println("logging runtime container access on [" + versionedArtifactIdentification.asString() + "] to -> " + outfile.getAbsolutePath());
-			IOTools.spit( outfile,  msg + "\n", "UTF-8", true);
-		} catch (IOException e) {			
-			e.printStackTrace();
+		if (log.isDebugEnabled()) {
+			String msg = "runtime container called on [" + versionedArtifactIdentification.asString() + "]";
+			try {
+				log.debug("logging runtime container access on [" + versionedArtifactIdentification.asString() + "] to -> " + outfile.getAbsolutePath());
+				IOTools.spit( outfile,  msg + "\n", "UTF-8", true);
+			} catch (IOException e) {			
+				e.printStackTrace();
+			}
 		}
 		
 		if (runtimeClasspathEntries == null || isStale(ClasspathResolutionScope.runtime)) {		
