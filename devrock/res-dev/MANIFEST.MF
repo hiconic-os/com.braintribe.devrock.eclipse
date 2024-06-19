@@ -24,154 +24,154 @@ Export-Package: com.braintribe.common.potential,com.braintribe.devrock
  intribe.devrock.api.selection,  org.eclipse.core.resources,  org.ecli
  pse.core.commands",com.braintribe.devrock.api.concurrent,com.braintri
  be.devrock.api.identification;uses:="com.braintribe.gm.model.reason,o
- rg.eclipse.core.resources",com.braintribe.devrock.api.logging;uses:="
- com.braintribe.logging",com.braintribe.devrock.api.markers;uses:="org
- .eclipse.core.resources",com.braintribe.devrock.api.nature;uses:="com
- .braintribe.gm.model.reason,org.eclipse.core.resources",com.braintrib
- e.devrock.api.project;uses:="org.eclipse.jdt.core,com.braintribe.gm.m
- odel.reason,org.eclipse.core.resources",com.braintribe.devrock.api.se
- lection; uses:="org.eclipse.ui,  com.braintribe.common.lcd,  org.ecli
- pse.core.resources,  org.eclipse.jface.viewers",com.braintribe.devroc
- k.api.storagelocker,com.braintribe.devrock.api.ui.commons; uses:="org
- .eclipse.jface.window,  com.braintribe.devrock.api.ui.images,  com.br
- aintribe.gm.model.reason,  com.braintribe.model.artifact.analysis,  c
- om.braintribe.devrock.api.ui.stylers,  org.eclipse.swt.graphics,  org
- .eclipse.ui.services,  org.eclipse.swt.widgets,  org.eclipse.jface.di
- alogs",com.braintribe.devrock.api.ui.editors; uses:="com.braintribe.d
- evrock.api.ve.listeners,  org.eclipse.swt.events,  org.eclipse.swt.gr
- aphics,  com.braintribe.build.artifact.virtualenvironment,  com.brain
- tribe.devrock.api.ui.listeners,  org.eclipse.swt.widgets,  org.eclips
- e.jface.preference,  com.braintribe.devrock.api.ui.properties",com.br
- aintribe.devrock.api.ui.editors.support;uses:="org.eclipse.core.resou
- rces",com.braintribe.devrock.api.ui.fonts; uses:="org.eclipse.swt.gra
- phics,  org.eclipse.ui.services,  org.eclipse.swt.widgets,  org.eclip
- se.jface.viewers",com.braintribe.devrock.api.ui.images;uses:="org.ecl
- ipse.swt.graphics,org.eclipse.ui.services",com.braintribe.devrock.api
- .ui.listeners,com.braintribe.devrock.api.ui.properties;uses:="com.bra
- intribe.ve.api",com.braintribe.devrock.api.ui.selection,com.braintrib
- e.devrock.api.ui.stylers; uses:="org.eclipse.swt.graphics,  org.eclip
- se.ui.services,  com.braintribe.utils.lcd,  org.eclipse.jface.viewers
- ",com.braintribe.devrock.api.ui.tree; uses:="org.eclipse.swt.events, 
-  org.eclipse.swt.widgets,  org.eclipse.jface.wizard,  org.eclipse.jfa
- ce.viewers",com.braintribe.devrock.api.ui.viewers.artifacts; uses:="o
- rg.eclipse.swt.events,  org.eclipse.jface.action,  org.eclipse.swt.gr
- aphics,  org.eclipse.swt.widgets,  com.braintribe.devrock.eclipse.mod
- el.storage,  org.eclipse.jface.viewers,  com.braintribe.devrock.eclip
- se.model.resolution.nodes,  org.eclipse.ui.services,  com.braintribe.
- devrock.api.ui.commons",com.braintribe.devrock.api.ui.viewers.artifac
- ts.selector; uses:="org.eclipse.swt.events,  org.eclipse.swt.graphics
- ,  org.eclipse.swt.widgets,  com.braintribe.model.artifact.compiled",
- com.braintribe.devrock.api.ui.viewers.artifacts.selector.editors.arti
- fact; uses:="org.eclipse.swt.graphics,  org.eclipse.swt.widgets,  org
- .eclipse.jface.viewers,  com.braintribe.model.artifact.compiled",com.
- braintribe.devrock.api.ui.viewers.artifacts.transpose.transposer,com.
- braintribe.devrock.api.ui.viewers.pom;uses:="org.eclipse.swt.widgets"
- ,com.braintribe.devrock.api.ui.viewers.reason; uses:="com.braintribe.
- gm.model.reason,  org.eclipse.swt.graphics,  com.braintribe.devrock.a
- pi.ui.commons,  org.eclipse.swt.widgets,  org.eclipse.jface.viewers",
- com.braintribe.devrock.api.ui.viewers.reason.transpose; uses:="com.br
- aintribe.devrock.eclipse.model.resolution.nodes,  com.braintribe.gm.m
- odel.reason,  org.eclipse.swt.graphics,  com.braintribe.devrock.api.u
- i.commons,  org.eclipse.swt.widgets,  org.eclipse.jface.viewers",com.
- braintribe.devrock.api.ui.viewers.yaml;uses:="com.braintribe.model.ar
- tifact.analysis,org.eclipse.swt.widgets,com.braintribe.devrock.model.
- repository",com.braintribe.devrock.bridge.eclipse.api; uses:="com.bra
- intribe.devrock.bridge.eclipse.environment,  com.braintribe.ve.api,  
- com.braintribe.gm.model.reason,  com.braintribe.devrock.mc.api.classp
- ath,  com.braintribe.model.artifact.compiled,  com.braintribe.devrock
- .model.repository",com.braintribe.devrock.bridge.eclipse.environment;
- uses:="com.braintribe.ve.api,com.braintribe.devrock.api.storagelocker
- ,com.braintribe.devrock.bridge.eclipse.api",com.braintribe.devrock.br
- idge.eclipse.workspace; uses:="com.braintribe.model.artifact.essentia
- l,  org.eclipse.core.resources,  com.braintribe.logging,  com.braintr
- ibe.model.artifact.compiled",com.braintribe.devrock.commands; uses:="
- com.braintribe.devrock.api.commands,  com.braintribe.gm.model.reason,
-   com.braintribe.devrock.importer.scanner.ui,  org.eclipse.swt.widget
- s,  org.eclipse.core.commands,  com.braintribe.devrock.model.reposito
- ry",com.braintribe.devrock.eclipse.model.actions,com.braintribe.devro
- ck.eclipse.model.identification; uses:="com.braintribe.model.generic,
-   com.braintribe.model.artifact.essential,  com.braintribe.model.gene
- ric.reflection,  com.braintribe.model.version,  com.braintribe.model.
- artifact.compiled,  com.braintribe.devrock.model.repository",com.brai
- ntribe.devrock.eclipse.model.reason.devrock;uses:="com.braintribe.gm.
- model.reason,com.braintribe.model.generic.reflection",com.braintribe.
- devrock.eclipse.model.resolution;uses:="com.braintribe.model.generic,
- com.braintribe.model.generic.reflection",com.braintribe.devrock.eclip
- se.model.resolution.nodes; uses:="com.braintribe.model.generic,  com.
- braintribe.model.artifact.essential,  com.braintribe.model.artifact.a
- nalysis,  com.braintribe.gm.model.reason,  com.braintribe.model.gener
- ic.reflection,  com.braintribe.model.artifact.consumable",com.braintr
- ibe.devrock.eclipse.model.storage;uses:="com.braintribe.model.generic
- ,com.braintribe.model.generic.reflection",com.braintribe.devrock.mc.a
- pi.classpath;uses:="com.braintribe.model.artifact.analysis,com.braint
- ribe.devrock.mc.api.download,com.braintribe.model.artifact.compiled",
- com.braintribe.devrock.mc.api.repository.configuration; uses:="com.br
- aintribe.devrock.model.repository.filters,  com.braintribe.ve.api,  c
- om.braintribe.gm.model.reason,  com.braintribe.utils.paths,  com.brai
- ntribe.devrock.model.repository,  com.braintribe.devrock.model.reposi
- toryview.resolution",com.braintribe.devrock.mc.core.configuration; us
- es:="com.braintribe.devrock.mc.api.repository.configuration,  com.bra
- intribe.gm.model.reason,  com.braintribe.logging,  org.apache.http.im
- pl.client,  com.braintribe.devrock.model.repository.filters,  com.bra
- intribe.ve.api,  com.braintribe.utils.paths,  com.braintribe.devrock.
- model.repository,  com.braintribe.devrock.model.repositoryview.resolu
- tion,  com.braintribe.model.artifact.changes",com.braintribe.devrock.
- model.mc.reason; uses:="com.braintribe.model.generic,  com.braintribe
- .model.artifact.essential,  com.braintribe.gm.model.reason,  com.brai
- ntribe.model.generic.reflection,  com.braintribe.gm.model.reason.esse
- ntial,  com.braintribe.model.version,  com.braintribe.model.artifact.
- compiled",com.braintribe.devrock.model.repository; uses:="com.braintr
- ibe.model.generic.base,  com.braintribe.devrock.model.repository.filt
- ers,  com.braintribe.model.generic,  com.braintribe.gm.model.reason, 
-  com.braintribe.model.generic.reflection,  com.braintribe.model.time"
- ,com.braintribe.devrock.plugin; uses:="com.braintribe.devrock.mc.api.
- event,  com.braintribe.gm.model.reason,  com.braintribe.devrock.impor
- ter.scanner,  com.braintribe.devrock.importer.dependencies.listener, 
-  org.eclipse.ui.plugin,  com.braintribe.devrock.bridge.eclipse.api,  
- com.braintribe.devrock.bridge.eclipse.workspace,  org.osgi.framework,
-   com.braintribe.devrock.api.ve.listeners,  org.eclipse.core.runtime,
-   com.braintribe.devrock.bridge.eclipse.environment,  com.braintribe.
- ve.api,  com.braintribe.model.generic,  com.braintribe.model.generic.
- reflection,  com.braintribe.devrock.api.ui.commons,  com.braintribe.d
- evrock.mc.api.classpath,  com.braintribe.model.artifact.compiled,  co
- m.braintribe.devrock.model.repository",com.braintribe.devrock.zarathu
- d.model,com.braintribe.devrock.zarathud.model.context,com.braintribe.
- devrock.zarathud.model.reasons,com.braintribe.gm.model.reason;uses:="
- com.braintribe.model.generic,com.braintribe.model.generic.reflection"
- ,com.braintribe.gm.model.reason.essential;uses:="com.braintribe.gm.mo
- del.reason,com.braintribe.model.generic.reflection",com.braintribe.mo
- del.artifact.analysis; uses:="com.braintribe.model.generic.base,  com
- .braintribe.gm.model.reason,  com.braintribe.model.artifact.essential
- ,  com.braintribe.model.generic.reflection,  com.braintribe.devrock.m
- odel.mc.cfg.origination,  com.braintribe.model.artifact.consumable,  
- com.braintribe.model.artifact.compiled",com.braintribe.model.artifact
- .compiled; uses:="com.braintribe.model.artifact.declared,  com.braint
- ribe.gm.model.reason,  com.braintribe.model.artifact.essential,  com.
- braintribe.model.generic.reflection,  com.braintribe.model.version",c
- om.braintribe.model.artifact.consumable; uses:="com.braintribe.model.
- artifact.essential,  com.braintribe.gm.model.reason,  com.braintribe.
- model.generic.reflection,  com.braintribe.model.resource,  com.braint
- ribe.model.artifact.compiled",com.braintribe.model.artifact.declared;
-  uses:="com.braintribe.model.generic,  com.braintribe.model.artifact.
- essential,  com.braintribe.gm.model.reason,  com.braintribe.model.gen
- eric.reflection,  com.braintribe.model.resource",com.braintribe.model
- .artifact.essential;uses:="com.braintribe.model.generic,com.braintrib
- e.model.generic.reflection",com.braintribe.model.artifact.maven.meta,
- com.braintribe.model.generic;uses:="com.braintribe.model.generic.refl
- ection",com.braintribe.model.generic.pr;uses:="com.braintribe.model.g
- eneric.reflection,com.braintribe.model.generic.value",com.braintribe.
- model.generic.reflection; uses:="com.braintribe.model.generic.mdec,  
- com.braintribe.processing.async.api,  com.braintribe.model.generic.pr
- .criteria,  com.braintribe.model.generic.pr,  com.braintribe.common.l
- cd.function,  com.braintribe.model.generic.collection,  com.braintrib
- e.model.meta,  com.braintribe.model.generic,  com.braintribe.model.ge
- neric.pr.criteria.matching,  com.braintribe.model.generic.session,  c
- om.braintribe.model.generic.value",com.braintribe.model.generic.refle
- ction.type;uses:="com.braintribe.model.generic.reflection",com.braint
- ribe.model.generic.reflection.type.simple;uses:="com.braintribe.model
- .generic.reflection",com.braintribe.model.resource;uses:="com.braintr
- ibe.model.generic.reflection",com.braintribe.model.resource.source,co
- m.braintribe.model.version;uses:="com.braintribe.model.generic,com.br
- aintribe.model.generic.reflection",com.braintribe.ve.api;uses:="com.b
- raintribe.common.attribute"
+ rg.eclipse.core.resources",com.braintribe.devrock.api.listener,com.br
+ aintribe.devrock.api.logging;uses:="com.braintribe.logging",com.brain
+ tribe.devrock.api.markers;uses:="org.eclipse.core.resources",com.brai
+ ntribe.devrock.api.nature;uses:="com.braintribe.gm.model.reason,org.e
+ clipse.core.resources",com.braintribe.devrock.api.project;uses:="org.
+ eclipse.jdt.core,com.braintribe.gm.model.reason,org.eclipse.core.reso
+ urces",com.braintribe.devrock.api.selection; uses:="org.eclipse.ui,  
+ com.braintribe.common.lcd,  org.eclipse.core.resources,  org.eclipse.
+ jface.viewers",com.braintribe.devrock.api.storagelocker,com.braintrib
+ e.devrock.api.ui.commons; uses:="org.eclipse.jface.window,  com.brain
+ tribe.devrock.api.ui.images,  com.braintribe.gm.model.reason,  com.br
+ aintribe.model.artifact.analysis,  com.braintribe.devrock.api.ui.styl
+ ers,  org.eclipse.swt.graphics,  org.eclipse.ui.services,  org.eclips
+ e.swt.widgets,  org.eclipse.jface.dialogs",com.braintribe.devrock.api
+ .ui.editors; uses:="com.braintribe.devrock.api.ve.listeners,  org.ecl
+ ipse.swt.events,  org.eclipse.swt.graphics,  com.braintribe.build.art
+ ifact.virtualenvironment,  com.braintribe.devrock.api.ui.listeners,  
+ org.eclipse.swt.widgets,  org.eclipse.jface.preference,  com.braintri
+ be.devrock.api.ui.properties",com.braintribe.devrock.api.ui.editors.s
+ upport;uses:="org.eclipse.core.resources",com.braintribe.devrock.api.
+ ui.fonts; uses:="org.eclipse.swt.graphics,  org.eclipse.ui.services, 
+  org.eclipse.swt.widgets,  org.eclipse.jface.viewers",com.braintribe.
+ devrock.api.ui.images;uses:="org.eclipse.swt.graphics,org.eclipse.ui.
+ services",com.braintribe.devrock.api.ui.listeners,com.braintribe.devr
+ ock.api.ui.properties;uses:="com.braintribe.ve.api",com.braintribe.de
+ vrock.api.ui.selection,com.braintribe.devrock.api.ui.stylers; uses:="
+ org.eclipse.swt.graphics,  org.eclipse.ui.services,  com.braintribe.u
+ tils.lcd,  org.eclipse.jface.viewers",com.braintribe.devrock.api.ui.t
+ ree; uses:="org.eclipse.swt.events,  org.eclipse.swt.widgets,  org.ec
+ lipse.jface.wizard,  org.eclipse.jface.viewers",com.braintribe.devroc
+ k.api.ui.viewers.artifacts; uses:="org.eclipse.swt.events,  org.eclip
+ se.jface.action,  org.eclipse.swt.graphics,  org.eclipse.swt.widgets,
+   com.braintribe.devrock.eclipse.model.storage,  org.eclipse.jface.vi
+ ewers,  com.braintribe.devrock.eclipse.model.resolution.nodes,  org.e
+ clipse.ui.services,  com.braintribe.devrock.api.ui.commons",com.brain
+ tribe.devrock.api.ui.viewers.artifacts.selector; uses:="org.eclipse.s
+ wt.events,  org.eclipse.swt.graphics,  org.eclipse.swt.widgets,  com.
+ braintribe.model.artifact.compiled",com.braintribe.devrock.api.ui.vie
+ wers.artifacts.selector.editors.artifact; uses:="org.eclipse.swt.grap
+ hics,  org.eclipse.swt.widgets,  org.eclipse.jface.viewers,  com.brai
+ ntribe.model.artifact.compiled",com.braintribe.devrock.api.ui.viewers
+ .artifacts.transpose.transposer,com.braintribe.devrock.api.ui.viewers
+ .pom;uses:="org.eclipse.swt.widgets",com.braintribe.devrock.api.ui.vi
+ ewers.reason; uses:="com.braintribe.gm.model.reason,  org.eclipse.swt
+ .graphics,  com.braintribe.devrock.api.ui.commons,  org.eclipse.swt.w
+ idgets,  org.eclipse.jface.viewers",com.braintribe.devrock.api.ui.vie
+ wers.reason.transpose; uses:="com.braintribe.devrock.eclipse.model.re
+ solution.nodes,  com.braintribe.gm.model.reason,  org.eclipse.swt.gra
+ phics,  com.braintribe.devrock.api.ui.commons,  org.eclipse.swt.widge
+ ts,  org.eclipse.jface.viewers",com.braintribe.devrock.api.ui.viewers
+ .yaml;uses:="com.braintribe.model.artifact.analysis,org.eclipse.swt.w
+ idgets,com.braintribe.devrock.model.repository",com.braintribe.devroc
+ k.bridge.eclipse.api; uses:="com.braintribe.devrock.bridge.eclipse.en
+ vironment,  com.braintribe.ve.api,  com.braintribe.gm.model.reason,  
+ com.braintribe.devrock.mc.api.classpath,  com.braintribe.model.artifa
+ ct.compiled,  com.braintribe.devrock.model.repository",com.braintribe
+ .devrock.bridge.eclipse.environment;uses:="com.braintribe.ve.api,com.
+ braintribe.devrock.api.storagelocker,com.braintribe.devrock.bridge.ec
+ lipse.api",com.braintribe.devrock.bridge.eclipse.workspace; uses:="co
+ m.braintribe.model.artifact.essential,  org.eclipse.core.resources,  
+ com.braintribe.logging,  com.braintribe.model.artifact.compiled",com.
+ braintribe.devrock.commands; uses:="com.braintribe.devrock.api.comman
+ ds,  com.braintribe.gm.model.reason,  com.braintribe.devrock.importer
+ .scanner.ui,  org.eclipse.swt.widgets,  org.eclipse.core.commands,  c
+ om.braintribe.devrock.model.repository",com.braintribe.devrock.eclips
+ e.model.actions,com.braintribe.devrock.eclipse.model.identification; 
+ uses:="com.braintribe.model.generic,  com.braintribe.model.artifact.e
+ ssential,  com.braintribe.model.generic.reflection,  com.braintribe.m
+ odel.version,  com.braintribe.model.artifact.compiled,  com.braintrib
+ e.devrock.model.repository",com.braintribe.devrock.eclipse.model.reas
+ on.devrock;uses:="com.braintribe.gm.model.reason,com.braintribe.model
+ .generic.reflection",com.braintribe.devrock.eclipse.model.resolution;
+ uses:="com.braintribe.model.generic,com.braintribe.model.generic.refl
+ ection",com.braintribe.devrock.eclipse.model.resolution.nodes; uses:=
+ "com.braintribe.model.generic,  com.braintribe.model.artifact.essenti
+ al,  com.braintribe.model.artifact.analysis,  com.braintribe.gm.model
+ .reason,  com.braintribe.model.generic.reflection,  com.braintribe.mo
+ del.artifact.consumable",com.braintribe.devrock.eclipse.model.storage
+ ;uses:="com.braintribe.model.generic,com.braintribe.model.generic.ref
+ lection",com.braintribe.devrock.mc.api.classpath;uses:="com.braintrib
+ e.model.artifact.analysis,com.braintribe.devrock.mc.api.download,com.
+ braintribe.model.artifact.compiled",com.braintribe.devrock.mc.api.rep
+ ository.configuration; uses:="com.braintribe.devrock.model.repository
+ .filters,  com.braintribe.ve.api,  com.braintribe.gm.model.reason,  c
+ om.braintribe.utils.paths,  com.braintribe.devrock.model.repository, 
+  com.braintribe.devrock.model.repositoryview.resolution",com.braintri
+ be.devrock.mc.core.configuration; uses:="com.braintribe.devrock.mc.ap
+ i.repository.configuration,  com.braintribe.gm.model.reason,  com.bra
+ intribe.logging,  org.apache.http.impl.client,  com.braintribe.devroc
+ k.model.repository.filters,  com.braintribe.ve.api,  com.braintribe.u
+ tils.paths,  com.braintribe.devrock.model.repository,  com.braintribe
+ .devrock.model.repositoryview.resolution,  com.braintribe.model.artif
+ act.changes",com.braintribe.devrock.model.mc.reason; uses:="com.brain
+ tribe.model.generic,  com.braintribe.model.artifact.essential,  com.b
+ raintribe.gm.model.reason,  com.braintribe.model.generic.reflection, 
+  com.braintribe.gm.model.reason.essential,  com.braintribe.model.vers
+ ion,  com.braintribe.model.artifact.compiled",com.braintribe.devrock.
+ model.repository; uses:="com.braintribe.model.generic.base,  com.brai
+ ntribe.devrock.model.repository.filters,  com.braintribe.model.generi
+ c,  com.braintribe.gm.model.reason,  com.braintribe.model.generic.ref
+ lection,  com.braintribe.model.time",com.braintribe.devrock.plugin; u
+ ses:="com.braintribe.devrock.mc.api.event,  com.braintribe.gm.model.r
+ eason,  com.braintribe.devrock.importer.scanner,  com.braintribe.devr
+ ock.importer.dependencies.listener,  org.eclipse.ui.plugin,  com.brai
+ ntribe.devrock.bridge.eclipse.api,  com.braintribe.devrock.bridge.ecl
+ ipse.workspace,  org.osgi.framework,  com.braintribe.devrock.api.ve.l
+ isteners,  org.eclipse.core.runtime,  com.braintribe.devrock.bridge.e
+ clipse.environment,  com.braintribe.ve.api,  com.braintribe.model.gen
+ eric,  com.braintribe.model.generic.reflection,  com.braintribe.devro
+ ck.api.ui.commons,  com.braintribe.devrock.mc.api.classpath,  com.bra
+ intribe.model.artifact.compiled,  com.braintribe.devrock.model.reposi
+ tory",com.braintribe.devrock.zarathud.model,com.braintribe.devrock.za
+ rathud.model.context,com.braintribe.devrock.zarathud.model.reasons,co
+ m.braintribe.gm.model.reason;uses:="com.braintribe.model.generic,com.
+ braintribe.model.generic.reflection",com.braintribe.gm.model.reason.e
+ ssential;uses:="com.braintribe.gm.model.reason,com.braintribe.model.g
+ eneric.reflection",com.braintribe.model.artifact.analysis; uses:="com
+ .braintribe.model.generic.base,  com.braintribe.gm.model.reason,  com
+ .braintribe.model.artifact.essential,  com.braintribe.model.generic.r
+ eflection,  com.braintribe.devrock.model.mc.cfg.origination,  com.bra
+ intribe.model.artifact.consumable,  com.braintribe.model.artifact.com
+ piled",com.braintribe.model.artifact.compiled; uses:="com.braintribe.
+ model.artifact.declared,  com.braintribe.gm.model.reason,  com.braint
+ ribe.model.artifact.essential,  com.braintribe.model.generic.reflecti
+ on,  com.braintribe.model.version",com.braintribe.model.artifact.cons
+ umable; uses:="com.braintribe.model.artifact.essential,  com.braintri
+ be.gm.model.reason,  com.braintribe.model.generic.reflection,  com.br
+ aintribe.model.resource,  com.braintribe.model.artifact.compiled",com
+ .braintribe.model.artifact.declared; uses:="com.braintribe.model.gene
+ ric,  com.braintribe.model.artifact.essential,  com.braintribe.gm.mod
+ el.reason,  com.braintribe.model.generic.reflection,  com.braintribe.
+ model.resource",com.braintribe.model.artifact.essential;uses:="com.br
+ aintribe.model.generic,com.braintribe.model.generic.reflection",com.b
+ raintribe.model.artifact.maven.meta,com.braintribe.model.generic;uses
+ :="com.braintribe.model.generic.reflection",com.braintribe.model.gene
+ ric.pr;uses:="com.braintribe.model.generic.reflection,com.braintribe.
+ model.generic.value",com.braintribe.model.generic.reflection; uses:="
+ com.braintribe.model.generic.mdec,  com.braintribe.processing.async.a
+ pi,  com.braintribe.model.generic.pr.criteria,  com.braintribe.model.
+ generic.pr,  com.braintribe.common.lcd.function,  com.braintribe.mode
+ l.generic.collection,  com.braintribe.model.meta,  com.braintribe.mod
+ el.generic,  com.braintribe.model.generic.pr.criteria.matching,  com.
+ braintribe.model.generic.session,  com.braintribe.model.generic.value
+ ",com.braintribe.model.generic.reflection.type;uses:="com.braintribe.
+ model.generic.reflection",com.braintribe.model.generic.reflection.typ
+ e.simple;uses:="com.braintribe.model.generic.reflection",com.braintri
+ be.model.resource;uses:="com.braintribe.model.generic.reflection",com
+ .braintribe.model.resource.source,com.braintribe.model.version;uses:=
+ "com.braintribe.model.generic,com.braintribe.model.generic.reflection
+ ",com.braintribe.ve.api;uses:="com.braintribe.common.attribute"
 

@@ -117,9 +117,9 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		activateAutoWorkspaceUpdate.setSelection( autoUpdate);
 		
 		activateDependerUpdate = new BooleanEditor();
-		activateDependerUpdate.setLabelToolTip( "Changes the behavior of the activated workspace resource change listener");
+		activateDependerUpdate.setLabelToolTip( "Changes the behavior of the activated workspace resource change listener to build only affected projects");
 		activateDependerUpdate.setEditToolTip( "If checked, the containers will react to changes of the dependers of changed projects in the workspace, otherwise the standard automatic behavior is used");
-		control = activateDependerUpdate.createControl(choicesComposite, "Automatically update containers of the dependers on detected project changes in workspace");
+		control = activateDependerUpdate.createControl(choicesComposite, "Activate advanced resource listener");
 		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		boolean autoDependerUpdate = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER, false);
 		activateDependerUpdate.setSelection( autoDependerUpdate);

@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IProject;
 public class ProjectInfoContainer {
 
 	private long currentModificationStamp;
+	private String currentMd5;
 	
 	/**
 	 * @return - the modification stamp as AC has seen while building the CP
@@ -32,5 +33,13 @@ public class ProjectInfoContainer {
 	}
 	public void setCurrentModificationStamp(long currentModificationStamp) {
 		this.currentModificationStamp = currentModificationStamp;
+	}
+	public String getCurrentMd5() {
+		return currentMd5;
+	}
+	public void setCurrentMd5(String currentMd5) {
+		this.currentMd5 = currentMd5;
 	}		
+	
+	
 }

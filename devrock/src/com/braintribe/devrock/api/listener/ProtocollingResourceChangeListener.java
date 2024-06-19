@@ -9,7 +9,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License along with this library; See http://www.gnu.org/licenses/.
 // ============================================================================
-package com.braintribe.devrock.ac.container.plugin.listener;
+package com.braintribe.devrock.api.listener;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -17,13 +17,15 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * helper to identify changes in the workspace as an additional {@link IResourceChangeListener}
  * 
  * @author pit
  */
-public class ResourceChangeProtocoller implements IResourceChangeListener {
+public class ProtocollingResourceChangeListener implements IResourceChangeListener {
+	private ProtocollingResourceVisitor prv = new ProtocollingResourceVisitor();
 
 	@Override
 	public void resourceChanged(IResourceChangeEvent arg0) {
@@ -31,7 +33,13 @@ public class ResourceChangeProtocoller implements IResourceChangeListener {
 		
 	}
 
-private void protocolEvent(IResourceChangeEvent event) {
+	/**
+	 * @param event - the {@link IResourceChangeEvent} as sent by Eclipse
+	 */
+	/**
+	 * @param event
+	 */
+	private void protocolEvent(IResourceChangeEvent event) {
 		
 		System.out.println("**** Protocolling event START ****");
 		int type = event.getType();
@@ -61,13 +69,22 @@ private void protocolEvent(IResourceChangeEvent event) {
 		}		
 		System.out.println("type: [" + key + "]");
 		
+		// check delta 
 		IResourceDelta delta = event.getDelta();
 		if (delta != null) {
-			System.out.println( "delta: [" + delta.getClass().getName() + "]");
-			IResource resource = delta.getResource();
-			System.out.println("delta resource: [" + resource.getClass() + "]");
 			
+			// call visitor
+			try {
+				delta.accept( prv);
+			} catch (CoreException e) {			
+				e.printStackTrace();
+			}			
+			
+			IResource resource = delta.getResource();
+			
+			// interpret the workspace resource 
 			if (resource instanceof IWorkspaceRoot) {
+				System.out.println("WORKSPACE delta");
 				IWorkspaceRoot wroot = (IWorkspaceRoot) resource;
 				IProject[] projects = wroot.getProjects();
 				System.out.println("num workspace project: [" + projects.length  + "]");
@@ -87,19 +104,19 @@ private void protocolEvent(IResourceChangeEvent event) {
 			System.out.println("delta resource name: [" + resourceName + "]");
 		}
 		else {
-			System.err.println("No delta");
+			System.out.println("No delta");
 		}
 		
 		Object source = event.getSource();
-		System.out.println( "source: [" + (source != null ? source.getClass().getName() : "null") + "]");
+		System.out.println( "event source: [" + (source != null ? source.getClass().getName() : "null") + "]");
 		
 		IResource resource = event.getResource();
 		if (resource != null) {
 			String name = resource.getName();			
-			System.out.println("resource: [" + (name != null ? name : resource.getClass()) + "]");
+			System.out.println("event resource: [" + (name != null ? name : resource.getClass()) + "]");
 		}
 		else {
-			System.err.println("No resource");
+			System.err.println("No event resource");
 		}
 		
 		int buildKind = event.getBuildKind();

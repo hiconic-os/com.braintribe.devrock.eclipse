@@ -97,9 +97,16 @@ public class WorkspaceContainerRegistry {
 	}
 		
 
-	public void acknowledgeContainerRefresh(IProject project, long current) {
+	public ProjectInfoContainer acknowledgeContainerRefresh(IProject project, long current) {
 		ProjectInfoContainer pic = projectToInfoMap.computeIfAbsent(project, k -> new ProjectInfoContainer());
-		pic.setCurrentModificationStamp(current);		
+		pic.setCurrentModificationStamp(current);
+		return pic;
+	}
+	
+	public ProjectInfoContainer acknowledgePomEvent(IProject project, String md5) {
+		ProjectInfoContainer pic = projectToInfoMap.computeIfAbsent(project, k -> new ProjectInfoContainer());
+		pic.setCurrentMd5(md5);
+		return pic;
 	}
 	
 	public ProjectInfoContainer getProjectInfoContainer( IProject project) {

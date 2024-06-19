@@ -49,10 +49,12 @@ public class ResourceVisitor implements IResourceDeltaVisitor {
 			
 		String resourceName = resource.getName();
 		IProject project = resource.getProject();
+		
 
 		// workspace project controller probably needs to be updated ..
 		if (resourceName.equalsIgnoreCase( ".project") || resourceName.equalsIgnoreCase("pom.xml")) {
-			if (project != null) {			
+			if (project != null) {
+				//System.out.println("project modified : " + project.getName());
 				//ArtifactContainerPlugin.getWorkspaceProjectRegistry().update( project);
 			}
 			else {

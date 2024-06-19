@@ -35,17 +35,20 @@ public class WorkspaceProjectViewSupplier implements Supplier<WorkspaceProjectVi
 	private Instant exposureInstant;
 	private boolean dirtied;
 	private Duration staleDelay = Duration.ofMillis( 1000);  // a second for now 
+	private boolean forcedRefresh;
 	
 	/**
 	 * @return - the current state of the workspace as a {@link WorkspaceProjectView} 
 	 */
 	private WorkspaceProjectView retrieveWorkspaceProjectView() {
-		System.out.println("Accessing project view");
+		//System.out.println("Accessing project view");
 		WorkspaceProjectView view = new WorkspaceProjectView();
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		for (IProject project : root.getProjects()) {
-			if (!project.isAccessible() || !project.isOpen()) {
-				System.out.println("project [" + project.getName() + "] isn't accessible");
+			boolean isAccessible = project.isAccessible();
+			boolean isOpen = project.isOpen();
+			//System.out.println("Eclipse: project [" + project.getName() + "]: " + ( isAccessible ? "access " : "no acc ") + (isOpen ? "open" : "closed"));
+			if (!isAccessible || !isOpen) {				
 				continue;
 			}
 			Maybe<CompiledArtifactIdentification> caipot = PomIdentificationHelper.identifyProject(project);
@@ -75,6 +78,10 @@ public class WorkspaceProjectViewSupplier implements Supplier<WorkspaceProjectVi
 		if (currentWorkspaceProjectView == null) {
 			currentWorkspaceProjectView = retrieveWorkspaceProjectView();
 		}
+		else if (forcedRefresh) {
+			currentWorkspaceProjectView = retrieveWorkspaceProjectView();
+			forcedRefresh = false;
+		}
 		else if (isStale()){
 			WorkspaceProjectView previousView = currentWorkspaceProjectView;
 			currentWorkspaceProjectView = retrieveWorkspaceProjectView();	
@@ -91,6 +98,10 @@ public class WorkspaceProjectViewSupplier implements Supplier<WorkspaceProjectVi
 	 */
 	private boolean isStale() {
 		return Instant.now().minus( staleDelay).isAfter(exposureInstant);
+	}
+	
+	public void forceRefresh() {
+		forcedRefresh = true;
 	}
 	
 	public boolean dirtied() {

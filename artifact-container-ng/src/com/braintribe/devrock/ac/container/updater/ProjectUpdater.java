@@ -12,6 +12,7 @@
 package com.braintribe.devrock.ac.container.updater;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,13 +71,16 @@ public class ProjectUpdater extends WorkspaceModifyOperation {
 		if (selectedProjects != null) {
 			Set<IProject> filteredDependencies = selectedProjects.stream().filter( p -> p != null).filter( p -> p.isAccessible()).collect( Collectors.toSet());
 			if (filteredDependencies.size() != selectedProjects.size()) {
+				Set<IProject> delta = new HashSet<IProject>( selectedProjects);
+				delta.removeAll(filteredDependencies);							
+				log.info("removed some projects from list as they are inaccessible: " + delta.stream().map( p -> p.getName()).collect( Collectors.joining(",")));
 				selectedProjects = filteredDependencies;
-				log.info("removed some projects from list as they are no longer accessible");
 			}
 		}
 		
 		if (selectedProjects == null || selectedProjects.size() == 0)
 			return;
+				
 		
 		try {
 			int i = 0;
@@ -87,14 +91,12 @@ public class ProjectUpdater extends WorkspaceModifyOperation {
 				
 				ArtifactContainer container = ArtifactContainerPlugin.instance().containerRegistry().getContainerOfProject(project);
 				if (container != null) {
-					// reassign - and perhaps update the VAI in the container
-					ArtifactContainer sibling = container.reinitialize( mode);
-					// trigger resolve
-					sibling.getClasspathEntries( false);
+					// reassign - triggers eclipse to ask for the cp
+					container.reinitialize( mode);									
 				}
 				else {
-					System.out.println("no container for [" + project.getName() + "]");
-				}
+					log.warn("no container for [" + project.getName() + "]");
+				}				
 				monitor.worked(i++);
 			}
 		} 

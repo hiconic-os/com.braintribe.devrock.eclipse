@@ -248,6 +248,10 @@ public class DevrockPlugin extends AbstractUIPlugin implements McBridge,
 		return projectView.get();
 	}
 	
+	public void forceRefreshOnProjectView() {
+		projectView.forceRefresh();
+	}
+	
 	/**
 	 * @return - true if the workspace is 'dirty' i.e. has changed after last check
 	 * on being dirty.

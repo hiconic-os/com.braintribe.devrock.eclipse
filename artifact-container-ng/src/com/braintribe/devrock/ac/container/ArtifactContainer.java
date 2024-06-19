@@ -384,21 +384,23 @@ public class ArtifactContainer implements IClasspathContainer {
 		}
 		RepositoryReflection reflection = reflectRepositoryConfigurationMaybe.get();
 		
-		for (AnalysisArtifact analyisArtifact : resolution.getSolutions()) {			
-			Part pomPart = analyisArtifact.getParts().get(":pom");
-			WorkspaceProjectInfo projectInfo = workspaceProjectView.getProjectInfo( analyisArtifact);
+		for (AnalysisArtifact analysisArtifact : resolution.getSolutions()) {			
+			Part pomPart = analysisArtifact.getParts().get(":pom");
+			WorkspaceProjectInfo projectInfo = workspaceProjectView.getProjectInfo( analysisArtifact);
+			
+			
 			
 			if (projectInfo == null) { // if no direct match's found .. 
 				// only modify version to find 'non-matching' in workspace view if artifact's dependency is singleton and not-ranged.			
 
-				Set<AnalysisDependency> dependers = analyisArtifact.getDependers();
+				Set<AnalysisDependency> dependers = analysisArtifact.getDependers();
 				if (dependers.size() == 1) {
 					AnalysisDependency depender = dependers.stream().findFirst().get();
 					String versionAsString = depender.getVersion();
 					VersionExpression ve = VersionExpression.parse(versionAsString);
 					if (ve instanceof Version) {
 						// see whether we find a match now
-						projectInfo = workspaceProjectView.getAutoRangedProjectInfo(analyisArtifact);
+						projectInfo = workspaceProjectView.getAutoRangedProjectInfo(analysisArtifact);
 						
 						// write a message to the log here 
 						if (projectInfo != null) {
@@ -420,21 +422,22 @@ public class ArtifactContainer implements IClasspathContainer {
 				boolean resolvedFromWorkspace = (origin instanceof WorkspaceRepository);					
 				boolean accessible = projectInfo.getProject().isAccessible();
 				
-				if ( resolvedFromWorkspace || (accessible && isDebugModuleArtifact)) {
-					projectDependencies.put(analyisArtifact, projectInfo.getProject());
+				if ( resolvedFromWorkspace || (accessible && isDebugModuleArtifact)) {					
+					projectDependencies.put(analysisArtifact, projectInfo.getProject());
 					// create entry for artifact, project style
-					generatedEntries.addAll( generateEntriesForProjectReference(isGwtArtifact, analyisArtifact, projectInfo));					
+					generatedEntries.addAll( generateEntriesForProjectReference(isGwtArtifact, analysisArtifact, projectInfo));
+					log.debug("Project (" + iJavaProject.getProject().getName() + ") found: "+ analysisArtifact.asString());
 				}
 				else if (!resolvedFromWorkspace && accessible) {
-					projectDependencies.put(analyisArtifact, projectInfo.getProject());
-					log.debug( "artifact  [" + iJavaProject.getProject().getProject().getName() + "]'s dependency [" + analyisArtifact.asString() + "] hasn't been resolved via the workspace repo, yet is taken as it fits the requirement");
-					generatedEntries.addAll( generateEntriesForProjectReference(isGwtArtifact, analyisArtifact, projectInfo));
+					projectDependencies.put(analysisArtifact, projectInfo.getProject());
+					log.debug( "artifact  [" + iJavaProject.getProject().getProject().getName() + "]'s dependency [" + analysisArtifact.asString() + "] hasn't been resolved via the workspace repo, yet is taken as it fits the requirement");
+					generatedEntries.addAll( generateEntriesForProjectReference(isGwtArtifact, analysisArtifact, projectInfo));
 				}
 				
 			}
 			else {
 				// create entry for artifact, jar style
-				generatedEntries.addAll( generateEntriesForJarReference( isGwtArtifact, analyisArtifact));				
+				generatedEntries.addAll( generateEntriesForJarReference( isGwtArtifact, analysisArtifact));				
 			}	
 			
 		}

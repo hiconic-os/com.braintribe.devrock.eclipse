@@ -55,7 +55,7 @@ public class DependerUpdater extends WorkspaceModifyOperation {
 		
 	@Configurable
 	public void setSelectedProjects(Set<IProject> selectedProjects) {
-		this.selectedProjects = selectedProjects;
+		this.selectedProjects = new HashSet<>(selectedProjects);
 	}
 
 	@Configurable
@@ -72,12 +72,13 @@ public class DependerUpdater extends WorkspaceModifyOperation {
 			selectedProjects = SelectionExtracter.selectedProjects(selection);
 		}
 		
+		
 		if (touchedProject != null) {
 			if (selectedProjects == null) {
 				selectedProjects = new HashSet<>();
 			}
-			log.info("Added touched artifact: " + touchedProject.getName());
-			selectedProjects.add(touchedProject);
+			boolean b = selectedProjects.add(touchedProject);
+			log.info( b ? "Added touched artifact: " + touchedProject.getName() : "touched artifact already present");
 		}
 		
 		
@@ -87,8 +88,10 @@ public class DependerUpdater extends WorkspaceModifyOperation {
 		// get identification of selected projects
 		WorkspaceContainerRegistry containerRegistry = ArtifactContainerPlugin.instance().containerRegistry();
 		
-		List<ArtifactContainer> containersToScan = containerRegistry.getRegisteredContainers().stream().filter( c -> !selectedProjects.contains(c.getProject().getProject())).collect( Collectors.toList()); 
+		//List<ArtifactContainer> containersToScan = containerRegistry.getRegisteredContainers().stream().filter( c -> !selectedProjects.contains(c.getProject().getProject())).collect( Collectors.toList()); 
 		
+		// all available containers can be dependers, also one of the selected ..
+		List<ArtifactContainer> containersToScan = containerRegistry.getRegisteredContainers().stream().filter( c -> c.getProject().getProject().isAccessible()).collect( Collectors.toList());
 		
 		// find all containers
 		
@@ -99,13 +102,18 @@ public class DependerUpdater extends WorkspaceModifyOperation {
 			for (IProject dependency : selectedProjects) {
 				ArtifactContainer containerOfProject = containerRegistry.getContainerOfProject(dependency);
 				if (containerOfProject == null) {
-					log.info("Skipped: No container attaced to project :" + dependency.getName());
+					log.info("Skipped: No container attached to project :" + dependency.getName());
 					continue;
 				}
 				// relax specification : only one version of an artifact can be present in the container
 				VersionedArtifactIdentification versionedArtifactIdentification = containerOfProject.getVersionedArtifactIdentification();
 				String solutionName = versionedArtifactIdentification.getGroupId() + ":" + versionedArtifactIdentification.getArtifactId();
-				if (container.getDependenciesSet().contains( solutionName)) {
+				Set<String> dependenciesSet = container.getDependenciesSet();
+				if (dependenciesSet == null) {
+					log.info("Skipped: container attached, yet no dependencies set :" + dependency.getName());
+					break;
+				}
+				if (dependenciesSet.contains( solutionName)) {
 					dependers.add( container.getProject().getProject());
 					break; // just one match's enough
 				}
@@ -115,8 +123,8 @@ public class DependerUpdater extends WorkspaceModifyOperation {
 		String input = selectedProjects.stream().map( p -> p.getName()).collect(Collectors.joining(","));
 		// log
 		if (dependers.size() > 0) {
-			String output = dependers.stream().map( p -> p.getName()).collect(Collectors.joining(","));
-			String msg = "Identified dependers of [" + input + "]: " + output;
+			String output = dependers.stream().map( p -> p.getName()).collect(Collectors.joining(",\n"));
+			String msg = "Identified dependers of [" + input + "]: \n" + output;
 			log.info(msg);		
 			ArtifactContainerStatus status = new ArtifactContainerStatus( msg, IStatus.INFO);
 			ArtifactContainerPlugin.instance().log(status);
