@@ -34,8 +34,9 @@ public class ResourceVisitor implements IResourceDeltaVisitor {
 		String resourceName = resource.getName();
 		IProject project = resource.getProject();
 		
-		// check if the changed resource's a pom 
-		if (resourceName.equalsIgnoreCase( "pom.xml") ) {
+		// check if the changed resource's a pom and if the content of the pom has changed..		
+		if ( resourceName.equalsIgnoreCase( "pom.xml") &&  
+			 (delta.getFlags() & IResourceDelta.CONTENT) == IResourceDelta.CONTENT) {
 			
 			if (project.isAccessible() == false)
 				return true;

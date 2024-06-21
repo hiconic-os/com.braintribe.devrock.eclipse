@@ -70,6 +70,8 @@ public class AnalysisViewLabelProvider  extends CellLabelProvider implements Nod
 	private static String IMPORT_DEPENDENCY = "\uD83E\uDC57"; //"🡗";
 	//U+258F	
 	
+	
+	
 
 	private static String PART = "\u2117";
 	
@@ -303,6 +305,17 @@ public class AnalysisViewLabelProvider  extends CellLabelProvider implements Nod
 			sb.append( declaratorNode.getDependingDependency().getArtifactId());
 			sb.append( "#");
 			sb.append( declaratorNode.getDependingDependency().getVersion());
+			
+			sb.append( " attached to: ");
+			
+			sb.append( declaratorNode.getBackingDeclaratorArtifact().getGroupId());
+			sb.append( ":");
+			sb.append( declaratorNode.getBackingDeclaratorArtifact().getArtifactId());
+			sb.append( "#");
+			sb.append( declaratorNode.getBackingDeclaratorArtifact().getVersion());
+			
+			
+			
 			return sb.toString();
 		}
 		else if (element instanceof ProjectNode) {
@@ -533,9 +546,13 @@ public class AnalysisViewLabelProvider  extends CellLabelProvider implements Nod
 				styler = parentRelationshipStyler;
 				break;					
 			case imports:
-				txt = IMPORT_DEPENDENCY;				
+				txt = IMPORT_DEPENDER;				
 				styler = importRelationshipStyler;
-				break;				
+				break;		
+			case import_owning_parent: 
+				txt = IMPORT_DEPENDENCY;
+				styler = importRelationshipStyler;
+				break;
 			default:
 				return null; 			
 		}		

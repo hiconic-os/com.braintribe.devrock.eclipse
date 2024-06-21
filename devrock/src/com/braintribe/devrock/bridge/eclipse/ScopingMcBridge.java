@@ -98,8 +98,8 @@ public class ScopingMcBridge implements McBridge {
 	public void close() {
 		synchronized ( bridgeMonitor) {		
 			if (currentBridge != null) {
-				currentBridge.close();
-				currentBridge = null;
+				//currentBridge.close();
+				currentBridge = null;								
 			}		
 		}
 	}	

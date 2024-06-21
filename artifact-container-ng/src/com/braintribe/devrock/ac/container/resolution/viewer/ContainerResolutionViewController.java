@@ -162,7 +162,7 @@ public class ContainerResolutionViewController {
 		capabilitesForParentsView.put( CapabilityKeys.visibleDependencies, false);
 		capabilitesForParentsView.put( CapabilityKeys.search, false);
 		capabilitesForParentsView.put( CapabilityKeys.detail, true);
-		capabilitesForParentsView.put( CapabilityKeys.parts, false);
+		capabilitesForParentsView.put( CapabilityKeys.parts, true);
 		capabilitesForParentsView.put( CapabilityKeys.open, true);
 		capabilitesForParentsView.put( CapabilityKeys.saveResolution, true);
 		capabilitesForParentsView.put( CapabilityKeys.purge, true);

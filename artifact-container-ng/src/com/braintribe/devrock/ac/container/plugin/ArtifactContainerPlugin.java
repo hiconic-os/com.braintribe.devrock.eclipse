@@ -20,13 +20,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.braintribe.devrock.ac.container.plugin.listener.ResourceChangeListener;
+import com.braintribe.devrock.ac.container.plugin.listener.CompoundResourceChangeListener;
 import com.braintribe.devrock.ac.container.registry.WorkspaceContainerRegistry;
+import com.braintribe.devrock.ac.container.updater.DeferredProjectUpdater;
 import com.braintribe.devrock.api.logging.LoggingCommons;
 import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
 import com.braintribe.devrock.api.ui.commons.UiSupport;
@@ -50,7 +52,8 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 	private static ArtifactContainerPlugin instance;
 	
 	private WorkspaceContainerRegistry containerRegistry = new WorkspaceContainerRegistry();
-	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
+	private IResourceChangeListener resourceChangeListener = new CompoundResourceChangeListener();
+//	private IResourceChangeListener resourceChangeProtocoller = new ProtcollingResourceChangeListener();
 	
 	private UiSupport uiSupport = new UiSupport();
 	
@@ -58,6 +61,8 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 
 	// this is the default for event logging. If not set in the storage locker, this is value is used. 
 	private boolean eventLoggingDefault = true;
+	
+	private DeferredProjectUpdater deferredUpdater;
 
 	public static ArtifactContainerPlugin instance() {
 		return instance;
@@ -74,7 +79,10 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 		log.info("ArtifactContainerPlugin: starting : " + new Date());
 
 		// listener installation 
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE );
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE );		
+		//ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeProtocoller, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE );
+		
+		deferredUpdater = new DeferredProjectUpdater();
 
 		// add additional initial setup here
 		DevrockPlugin.instance().addPreferencesChangeListener(instance);
@@ -101,10 +109,15 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 			DevrockPlugin.instance().removePreferencesChangeListener(instance);
 			connected = false;
 		}
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+		//ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeProtocoller);
 		
 		// de-initialization tasks here
 		uiSupport.dispose();
-				
+		
+		// stop and close the deferred updater
+		deferredUpdater.preDestroy();
+		
 		long endTime = System.nanoTime();
 		String msg = "ArtifactContainerPlugin : stopped after " + (endTime - startTime) / 1E6 + " ms";
 		log.info(msg);
@@ -205,6 +218,9 @@ public class ArtifactContainerPlugin extends AbstractUIPlugin implements Prefere
 		return DevrockPlugin.envBridge().storageLocker().getValue(StorageLockerSlots.SLOT_AC_DEBUG_EVENT_LOGGING, eventLoggingDefault);
 	}
 
+	public DeferredProjectUpdater projectUpdater() {
+		return deferredUpdater;
+	}
 	
 	
 }

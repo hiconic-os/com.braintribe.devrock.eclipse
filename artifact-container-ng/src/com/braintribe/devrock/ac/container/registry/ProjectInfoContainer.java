@@ -9,27 +9,37 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License along with this library; See http://www.gnu.org/licenses/.
 // ============================================================================
-package com.braintribe.devrock.eclipse.model.resolution.nodes;
+package com.braintribe.devrock.ac.container.registry;
 
-import com.braintribe.model.generic.base.EnumBase;
-import com.braintribe.model.generic.reflection.EnumType;
-import com.braintribe.model.generic.reflection.EnumTypes;
+import org.eclipse.core.resources.IProject;
 
 /**
- * simple way to classify the node via its function, to assign icons for instance
+ * information container for {@link IProject} in the workspace 
+ * 
+ * currently overkill (no other info than the {@link IProject#getModificationStamp()}
+ * 
  * @author pit
- *
  */
-public enum NodeFunction implements EnumBase{
-	standard, imports, import_owning_parent, parent, depender, terminal, clash, clashWinner, clashLoser, dependency;
-	
-	
-	final EnumType T = EnumTypes.T(NodeFunction.class);
+public class ProjectInfoContainer {
 
-	@Override
-	public EnumType type() {	
-		return T;
+	private long currentModificationStamp;
+	private String currentMd5;
+	
+	/**
+	 * @return - the modification stamp as AC has seen while building the CP
+	 */
+	public long getCurrentModificationStamp() {
+		return currentModificationStamp;
 	}
+	public void setCurrentModificationStamp(long currentModificationStamp) {
+		this.currentModificationStamp = currentModificationStamp;
+	}
+	public String getCurrentMd5() {
+		return currentMd5;
+	}
+	public void setCurrentMd5(String currentMd5) {
+		this.currentMd5 = currentMd5;
+	}		
 	
 	
 }

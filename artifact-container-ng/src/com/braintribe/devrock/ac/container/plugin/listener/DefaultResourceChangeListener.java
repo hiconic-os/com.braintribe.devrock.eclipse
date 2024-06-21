@@ -11,6 +11,8 @@
 // ============================================================================
 package com.braintribe.devrock.ac.container.plugin.listener;
 
+import java.util.Collections;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -21,19 +23,39 @@ import org.eclipse.core.runtime.CoreException;
 
 import com.braintribe.devrock.ac.container.plugin.ArtifactContainerPlugin;
 import com.braintribe.devrock.ac.container.plugin.ArtifactContainerStatus;
+import com.braintribe.devrock.ac.container.updater.ProjectUpdater;
+import com.braintribe.devrock.ac.container.updater.ProjectUpdater.Mode;
 import com.braintribe.devrock.ac.container.updater.WorkspaceUpdater;
 import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
 import com.braintribe.devrock.plugin.DevrockPlugin;
 import com.braintribe.logging.Logger;
 
-public class ResourceChangeListener implements IResourceChangeListener {
-	private static Logger log = Logger.getLogger(ResourceChangeListener.class);
+/**
+ * standard {@link IResourceChangeListener}
+ * 
+ * @author pit
+ */
+public class DefaultResourceChangeListener implements IResourceChangeListener {
+	private static Logger log = Logger.getLogger(DefaultResourceChangeListener.class);
 
 	private ResourceVisitor resourceVisitor = null;
 			
 	
-	public ResourceChangeListener() {	
-		resourceVisitor = new ResourceVisitor();
+	public DefaultResourceChangeListener() {	
+		resourceVisitor = new ResourceVisitor( this::acceptUpdateRequest);
+	}
+	
+	public void acceptUpdateRequest(IProject project) {
+		ProjectUpdater updater = new ProjectUpdater( Mode.pom);
+		try {
+			updater.setSelectedProjects( Collections.singleton( project));
+			updater.runAsJob();
+		} catch (Exception e) {
+			String msg = "cannot react on changes in pom of [" + project.getName() + "]";
+			log.error( msg, e);
+			ArtifactContainerStatus status = new ArtifactContainerStatus( msg, e);
+			ArtifactContainerPlugin.instance().log(status);
+		} 
 	}
 	
 	@Override

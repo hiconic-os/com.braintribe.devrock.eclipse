@@ -13,6 +13,7 @@ package com.braintribe.devrock.ac.container.plugin.listener;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -27,11 +28,18 @@ import com.braintribe.devrock.ac.container.updater.ProjectUpdater.Mode;
 import com.braintribe.logging.Logger;
 
 /**
+ * 
+ * {@link IResourceDeltaVisitor} to detect changes in the pom of a project
  * @author pit
  *
  */
 public class ResourceVisitor implements IResourceDeltaVisitor {
 	private static Logger log = Logger.getLogger(ResourceVisitor.class);
+	private Consumer<IProject> updateRequestHandler;
+	
+	public ResourceVisitor(Consumer<IProject> consumer) {
+		updateRequestHandler = consumer;
+	}
 
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
@@ -41,10 +49,12 @@ public class ResourceVisitor implements IResourceDeltaVisitor {
 			
 		String resourceName = resource.getName();
 		IProject project = resource.getProject();
+		
 
 		// workspace project controller probably needs to be updated ..
 		if (resourceName.equalsIgnoreCase( ".project") || resourceName.equalsIgnoreCase("pom.xml")) {
-			if (project != null) {			
+			if (project != null) {
+				//System.out.println("project modified : " + project.getName());
 				//ArtifactContainerPlugin.getWorkspaceProjectRegistry().update( project);
 			}
 			else {
@@ -60,10 +70,16 @@ public class ResourceVisitor implements IResourceDeltaVisitor {
 			File prjDirectory = project.getLocation().toFile();
 			File resourceFile = resource.getLocation().toFile();
 			if (!resourceFile.getParent().equals( prjDirectory.getAbsolutePath())) {
-				//System.out.println("found fake resource [" + resourceFile.getAbsolutePath());
+				log.info("skippling not relevant pom resource [" + resourceFile.getAbsolutePath() + "] in project: " + project.getName());
 				return true;
-			}		
+			}
+			
+			// signal listener to mark project as changed for depender update
+			updateRequestHandler.accept(project);
+			
 			// perhaps calculate MD5 as in old mc and if changed, trigger and update?
+			
+			// actually update the CP as it's been changed
 			ProjectUpdater updater = new ProjectUpdater( Mode.pom);
 			try {
 				updater.setSelectedProjects( Collections.singleton( project));
@@ -73,8 +89,7 @@ public class ResourceVisitor implements IResourceDeltaVisitor {
 				log.error( msg, e);
 				ArtifactContainerStatus status = new ArtifactContainerStatus( msg, e);
 				ArtifactContainerPlugin.instance().log(status);
-			} 
-						
+			} 							
 		}				
 								
 		// 

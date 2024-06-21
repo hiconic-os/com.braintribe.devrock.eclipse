@@ -56,7 +56,7 @@ public class DynamicProjectRemoveDebugModuleNatureCommandItem extends Contributi
 	public void fill(Menu menu, int index) {
 		long before = System.currentTimeMillis();
 		IProject project = SelectionExtracter.currentProject();
-		if (project == null) {
+		if (project == null || !project.isAccessible()) {
 			return;
 		}
 
@@ -81,7 +81,6 @@ public class DynamicProjectRemoveDebugModuleNatureCommandItem extends Contributi
 
 	@Override
 	public void dispose() {
-		image.dispose();
 		super.dispose();
 	}
 

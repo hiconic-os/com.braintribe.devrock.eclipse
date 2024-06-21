@@ -11,21 +11,31 @@
 // ============================================================================
 package com.braintribe.devrock.ac.container.registry;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 
 import com.braintribe.devrock.ac.container.ArtifactContainer;
+import com.braintribe.model.artifact.analysis.AnalysisArtifactResolution;
 
 /**
- * simple registry for artifact containers in the workspace.. 
+ * simple registry for artifact containers in the workspace..
+ *  
  * @author pit
  *
  */
 public class WorkspaceContainerRegistry {
 	private Map<IProject,ArtifactContainer> projectToContainerMap = new ConcurrentHashMap<>();
 	private Map<ArtifactContainer, IProject> containerMapToProjectMap = new ConcurrentHashMap<>();
+	private Map<IProject, ProjectInfoContainer> projectToInfoMap = new ConcurrentHashMap<>();
+	 
 	
 	/**
 	 * called when a container is initialized
@@ -77,4 +87,30 @@ public class WorkspaceContainerRegistry {
 	public IProject getProjectOfContainer( ArtifactContainer container) {
 		return containerMapToProjectMap.get(container);
 	}
+	
+	public Collection<IProject> getRegisteredProjects() {
+		return projectToContainerMap.keySet();
+	}
+	
+	public Collection<ArtifactContainer> getRegisteredContainers() {
+		return containerMapToProjectMap.keySet();
+	}
+		
+
+	public ProjectInfoContainer acknowledgeContainerRefresh(IProject project, long current) {
+		ProjectInfoContainer pic = projectToInfoMap.computeIfAbsent(project, k -> new ProjectInfoContainer());
+		pic.setCurrentModificationStamp(current);
+		return pic;
+	}
+	
+	public ProjectInfoContainer acknowledgePomEvent(IProject project, String md5) {
+		ProjectInfoContainer pic = projectToInfoMap.computeIfAbsent(project, k -> new ProjectInfoContainer());
+		pic.setCurrentMd5(md5);
+		return pic;
+	}
+	
+	public ProjectInfoContainer getProjectInfoContainer( IProject project) {
+		return projectToInfoMap.get(project);
+	}
+		
 }

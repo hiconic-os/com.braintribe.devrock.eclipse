@@ -12,6 +12,7 @@
 package com.braintribe.devrock.zed.ui;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import com.braintribe.devrock.plugin.DevrockPlugin;
 import com.braintribe.devrock.zarathud.model.classpath.ClasspathDuplicateNode;
 import com.braintribe.devrock.zarathud.model.common.Node;
 import com.braintribe.devrock.zarathud.model.module.PackageNode;
+import com.braintribe.devrock.zarathud.model.reasons.ZedAnalysisIssue;
 import com.braintribe.devrock.zed.ui.transposer.ClasspathAnalysisContentTransposer;
 import com.braintribe.devrock.zed.ui.transposer.DependencyAnalysisContentTransposer;
 import com.braintribe.devrock.zed.ui.transposer.ExtractionTransposer;
@@ -55,6 +57,7 @@ import com.braintribe.devrock.zed.ui.viewer.extraction.ZedExtractionViewerContex
 import com.braintribe.devrock.zed.ui.viewer.model.ModelAnalysisViewer;
 import com.braintribe.devrock.zed.ui.viewer.module.ModuleAnalysisViewer;
 import com.braintribe.gm.model.reason.Reason;
+import com.braintribe.gm.reason.TemplateReasons;
 import com.braintribe.zarathud.model.data.Artifact;
 import com.braintribe.zarathud.model.forensics.ClasspathForensicsResult;
 import com.braintribe.zarathud.model.forensics.DependencyForensicsResult;
@@ -303,6 +306,23 @@ public class ZedResultViewer extends DevrockDialog implements IDisposable {
     	extractionItem.setControl( moduleViewerComposite);
     	
     
+    	List<Reason> unresolvableTypeReferences = context.getUnresolvableTypeReferences();
+    	Reason umbrella = TemplateReasons.build(ZedAnalysisIssue.T)
+    			.assign(ZedAnalysisIssue::setArtifact, artifact)
+    			.assign(ZedAnalysisIssue::setTimestamp, new Date())
+    			.causes(unresolvableTypeReferences).toReason();
+    	if (unresolvableTypeReferences.size() > 0) {
+    		CTabItem unresolvedItem = new CTabItem(tabFolder, SWT.NONE);
+	        unresolvedItem.setImage( warningImage);
+	        unresolvedItem.setText("unresolvable type references");
+	        reasonViewer = new TransposedReasonViewer( umbrella);
+	        reasonViewer.setShowTypes(false);
+	        reasonViewer.setUiSupport( uiSupport);
+	        Composite reasonViewerComposite = reasonViewer.createControl( tabFolder, "java.lang.Object references");
+	        reasonViewerComposite.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true));
+	        unresolvedItem.setControl( reasonViewerComposite);
+    	}
+    	
     	
     	//
     	// scan issues 

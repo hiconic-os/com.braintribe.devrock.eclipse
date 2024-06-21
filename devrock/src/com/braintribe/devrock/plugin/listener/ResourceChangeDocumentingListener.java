@@ -65,7 +65,7 @@ public class ResourceChangeDocumentingListener implements IResourceChangeListene
 		
 		
 		try {
-			System.err.println("logging to -> " + outfile.getAbsolutePath());
+			//System.err.println("logging to -> " + outfile.getAbsolutePath());
 			IOTools.spit( outfile, rc + dc + "\n", "UTF-8", true);
 		} catch (IOException e) {
 			e.printStackTrace();

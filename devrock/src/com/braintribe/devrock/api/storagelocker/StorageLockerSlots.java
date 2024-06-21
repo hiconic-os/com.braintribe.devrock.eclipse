@@ -40,6 +40,9 @@ public interface StorageLockerSlots {
 	
 	// AC
 	String SLOT_AUTO_UPDATE_WS = "auto-update-workspace";
+	String SLOT_AUTO_UPDATE_DEPENDERS = "auto-update-dependers";
+	String SLOT_ADVANCED_RC_LISTENER = "advanced-resourcechange-listener";
+	
 	String SLOT_SELECTIVE_WS_SYNCH = "selective-ws-synch";	
 	String SLOT_AC_DEBUG_EVENT_LOGGING ="ac-debug-event-logging";
 	String SLOT_DR_DEBUG_EVENT_LOGGING ="dr-debug-event-logging";
@@ -47,6 +50,7 @@ public interface StorageLockerSlots {
 	String SLOT_AC_USE_STANDARD_CONFIGURATION = "ac-use-custom-configuration-for-analyis";
 	String SLOT_AC_CUSTOM_CONFIGURATION = "ac-custom-configuration-for-analyis";
 	String SLOT_AC_IGNORE_ECLIPSE = "ac-ignore-eclipse-projects-in-resolution";
+	String SLOT_AC_CLOSED_PROJECTS ="ac-closed-projects";
 	
 	// Resolution viewer
 	String SLOT_ARTIFACT_VIEWER_TC_MAP_KEY = "artifact-viewer-context-map";
@@ -84,9 +88,13 @@ public interface StorageLockerSlots {
 	String SLOT_TF_NATURE_PROJECT_ICONS = "tf-nature-based-project-icons";
 	String SLOT_TF_NATURE_PROJECT_BACKGROUND = "tf-nature-based-project-background";
 	
+	// builders
+	
 	// ARB
 	String SLOT_ARB_OUTPUT_DIR = "arb-output-directory";
-	String DEFAULT_ARB_OUTPUT_DIRNAME = "class-gen";	
+	String DEFAULT_ARB_OUTPUT_DIRNAME = "class-gen";
+	String SLOT_BUILDER_AR_REFRESH_POST_BUILD = "builder_ar_refresh_after_builds";
+	String SLOT_BUILDER_AR_INCREMENTAL_ALSO = "builder_ar_react_to_incremental_builds";
 		
 	// MB
 	String SLOT_MB_SUCCESS_MESSAGES ="mb-success-messages-enabled";
@@ -114,6 +122,7 @@ public interface StorageLockerSlots {
 	String SLOT_ZED_COMPARISON_NOTES_TEMPLATE = "zed-release-notes-template-file";
 	String SLOT_ZED_USE_INTERAL_CMP_TEMPLATE = "zed-use-internal-cmp-template";
 	String SLOT_ZED_EXTERNAL_CMP_TEMPLATE = "zed-external-cmp-template";
+	
 	
 	// GF - currently not in use
 	String SLOT_GF_TEMP_DIR = "gf-temp-directory";

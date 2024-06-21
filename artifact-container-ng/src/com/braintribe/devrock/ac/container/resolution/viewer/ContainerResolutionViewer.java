@@ -86,7 +86,10 @@ import com.braintribe.model.artifact.analysis.DependencyClash;
 import com.braintribe.model.artifact.compiled.CompiledArtifactIdentification;
 import com.braintribe.model.artifact.compiled.CompiledDependencyIdentification;
 import com.braintribe.model.artifact.compiled.CompiledPartIdentification;
+import com.braintribe.model.artifact.consumable.Part;
 import com.braintribe.model.artifact.essential.VersionedArtifactIdentification;
+import com.braintribe.model.resource.FileResource;
+import com.braintribe.model.resource.Resource;
 import com.braintribe.wire.api.util.Lists;
 
 /**
@@ -663,6 +666,11 @@ public class ContainerResolutionViewer extends DevrockDialog implements DetailRe
 			item.dispose();
 		}
 		
+		private void showPomOpeningErrorMessage(String msg) {
+			ArtifactContainerStatus status = new ArtifactContainerStatus( msg, IStatus.ERROR);
+			ArtifactContainerPlugin.instance().log(status);
+		}
+		
 		/**
 		 * retrieves the pom from a {@link Node}
 		 * @param node - either an {@link AnalysisNode} or a {@link DependerNode}
@@ -690,10 +698,27 @@ public class ContainerResolutionViewer extends DevrockDialog implements DetailRe
 				if (maybe.isSatisfied()) {
 					return Pair.of( owner, maybe.get());
 				}
-				else {
-					ArtifactContainerStatus status = new ArtifactContainerStatus( "no pom found for repository artifact [" + owner.asString(), IStatus.ERROR);
-					ArtifactContainerPlugin.instance().log(status);
+				else if (owner.getParts().get("pom") != null) {
+					Part part = owner.getParts().get("pom");
+					Resource resource = part.getResource();
+					if (resource instanceof FileResource) {
+						FileResource fres = (FileResource) resource;
+						File file = new File(fres.getPath());
+						if (file.exists()) {
+							return Pair.of( owner, file);							
+						}
+						else {
+							showPomOpeningErrorMessage("pom isn't accessible for repository artifact :" + owner.asString());
+						}
+					}
+					else {
+						showPomOpeningErrorMessage("no readable pom attached to repository artifact :" + owner.asString());						
+					}					
 				}
+				else {										
+					showPomOpeningErrorMessage("no pom found for repository artifact :" + owner.asString());					
+				}
+				
 			} 
 			else {
 				// in the workspace, find the pom project member 

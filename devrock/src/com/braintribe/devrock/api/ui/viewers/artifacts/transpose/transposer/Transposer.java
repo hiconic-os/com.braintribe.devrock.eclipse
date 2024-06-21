@@ -225,7 +225,7 @@ public class Transposer {
 					}
 					// standard depender path
 					if (tcC.getShowDependers()) {
-						attachDependers(tcC, Collections.singletonList(involved), node);
+						attachDependers(tcC, Collections.singletonList(involved), node, NodeFunction.depender);
 					}
 
 				} else {
@@ -243,7 +243,7 @@ public class Transposer {
 					clone.setSolution(replacedAnalysisArtifact);
 
 					if (tcC.getShowDependers()) {
-						attachDependers(tcC, Collections.singletonList(clone), node);
+						attachDependers(tcC, Collections.singletonList(clone), node, NodeFunction.depender);
 					}
 				}
 				// only add the node if it hasn't been reused (multiple winners)
@@ -643,6 +643,7 @@ public class Transposer {
 			return node;
 		}
 		node = AnalysisNode.T.create();
+		
 		node.setSolutionIdentification(artifact);
 		node.setBackingSolution(artifact);
 
@@ -702,7 +703,7 @@ public class Transposer {
 			
 			if (context.getShowParentDependers()) {
 				// attach parent dependers as depender nodes
-				attachDependers(context, parentDependers, node);
+				attachDependers(context, parentDependers, node, NodeFunction.depender);
 				synchronized (monitor) {
 					
 					// mark
@@ -720,13 +721,13 @@ public class Transposer {
 			}
 			// check dep mgt
 		}
-		// if this is an import artifact, add dependers
+		// if this is an import artifact, add dependers (i.e. the artifacts that are using the import)
 		if (artifact.getImporters().size() > 0) {
 			node.setFunction(NodeFunction.imports);
 
 			if (context.getShowImportDependers()) {
 				// attach imports as dependencies
-				attachDependers(context, artifact.getImporters(), node);
+				attachDependers(context, artifact.getImporters(), node, NodeFunction.depender);
 
 				// attachDeclarator(context, artifact, node);
 			}
@@ -825,7 +826,7 @@ public class Transposer {
 						
 						AnalysisArtifact parent = parentNode.getBackingSolution();
 						if (parent != null) {
-							attachDependers(context, parent.getParentDependers(), parentNode);
+							attachDependers(context, parent.getParentDependers(), parentNode, NodeFunction.depender);
 							// mark nodes 												
 							List<DependerNode> toMark = parentNode.getChildren().stream()
 														.filter( n -> n instanceof DependerNode)
@@ -863,6 +864,7 @@ public class Transposer {
 			AnalysisNode importNode = from(context, importDependency);
 			if (importNode != null) {
 				importNode.setFunction(NodeFunction.imports);
+				node.setFunction(NodeFunction.import_owning_parent);
 				node.setParentNode(importNode);
 				node.getChildren().add(importNode);
 			}
@@ -879,7 +881,7 @@ public class Transposer {
 	 */
 	private void attachDependers(TranspositionContext context, AnalysisArtifact artifact, Node node) {
 		Set<AnalysisDependency> dependers = artifact.getDependers();
-		attachDependers(context, dependers, node);
+		attachDependers(context, dependers, node, NodeFunction.depender);
 	}
 
 	/**
@@ -891,7 +893,7 @@ public class Transposer {
 	 *                  attach as dependers
 	 * @param node      - the {@link Node} to attach to
 	 */
-	private void attachDependers(TranspositionContext context, Collection<AnalysisDependency> dependers, Node node) {
+	private void attachDependers(TranspositionContext context, Collection<AnalysisDependency> dependers, Node node, NodeFunction nodeFunction) {
 		//
 
 		List<Node> currentChildren = new ArrayList<>(node.getChildren());
@@ -928,7 +930,7 @@ public class Transposer {
 				dependerNode.setIsTerminal(true);
 			}
 
-			dependerNode.setFunction(NodeFunction.depender);
+			dependerNode.setFunction( nodeFunction);
 			List<DependerNode> nextNodes = getDependerNode(context, dependerArtifact);
 			nextNodes.sort(TranspositionCommons.dependencyNodeComparator);
 			dependerNode.getChildren().addAll(nextNodes);
@@ -1079,7 +1081,7 @@ public class Transposer {
 				adNode.setFunction(NodeFunction.standard);
 				node.getChildren().add(adNode);
 			}
-			//
+			// if this artifact has an import in its declaration, add it
 			if (context.getShowImports()) {
 				attachImport(context, solution, node);
 			}
@@ -1145,19 +1147,19 @@ public class Transposer {
 		declaratorNode.setBackingDependingDependency(node.getBackingDependency());
 
 		if (context.getShowImportDependers()) {
-			attachDependers(context, Collections.singletonList(node.getBackingDependency()), declaratorNode);
+			attachDependers(context, Collections.singletonList(node.getBackingDependency()), declaratorNode, NodeFunction.depender);
 		}
 
 		declaratorNode.setDeclaratorArtifact(declarator);
 		declaratorNode.setBackingDeclaratorArtifact(declarator);
 
-		AnalysisNode declaringNode = from(context, declarator);
-		// check if we need to add the import to the parent...
-		if (context.getShowParentDependers()) {
-			attachDependers(context, Collections.singletonList(node.getBackingDependency()), declaringNode);
-		}
+		//AnalysisNode declaringNode = from(context, declarator);
 
-		declaratorNode.getChildren().add(declaringNode);
+		// check if we need to add the import to the parent...
+		// it's not a parent depender, i.e. the UNICODE should be different. How to mark it?	
+		//attachDependers(context, Collections.singletonList(node.getBackingDependency()), declaringNode, NodeFunction.import_owning_parent);
+	
+		//declaratorNode.getChildren().add(declaringNode);
 		node.getChildren().add(declaratorNode);
 	}
 
