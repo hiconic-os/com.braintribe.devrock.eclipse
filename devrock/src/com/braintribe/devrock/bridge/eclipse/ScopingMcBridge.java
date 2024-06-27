@@ -23,6 +23,7 @@ import com.braintribe.devrock.eclipse.model.identification.RemoteCompiledDepende
 import com.braintribe.devrock.mc.api.classpath.ClasspathResolutionScope;
 import com.braintribe.devrock.mc.api.repository.configuration.RepositoryReflection;
 import com.braintribe.devrock.model.repository.RepositoryConfiguration;
+import com.braintribe.devrock.plugin.DevrockPlugin;
 import com.braintribe.gm.model.reason.Maybe;
 import com.braintribe.model.artifact.analysis.AnalysisArtifactResolution;
 import com.braintribe.model.artifact.compiled.CompiledArtifact;
@@ -98,7 +99,8 @@ public class ScopingMcBridge implements McBridge {
 	public void close() {
 		synchronized ( bridgeMonitor) {		
 			if (currentBridge != null) {
-				//currentBridge.close();
+				// mark the current bridge to be destroy once not in use
+				DevrockPlugin.instance().weakClosingController().closeWhenWeak(currentBridge);
 				currentBridge = null;								
 			}		
 		}

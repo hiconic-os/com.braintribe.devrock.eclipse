@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
 Copyright BRAINTRIBE TECHNOLOGY GMBH, Austria, 2002-2022
 
 This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
@@ -9,8 +8,7 @@ This library is distributed in the hope that it will be useful, but WITHOUT ANY 
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along with this library; See http://www.gnu.org/licenses/.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.braintribe.devrock.eclipse</groupId>
     <artifactId>devrock</artifactId>
@@ -23,6 +21,7 @@ You should have received a copy of the GNU Lesser General Public License along w
         <V.com.braintribe.xml>[2.0,2.1)</V.com.braintribe.xml>
         <V.com.braintribe.execution>[2.0,2.1)</V.com.braintribe.execution>
         <V.com.braintribe.velocity>[2.0,2.1)</V.com.braintribe.velocity>
+        <V.com.braintribe.common>[2.0,2.1)</V.com.braintribe.common>
     </properties>
     <licenses>
         <license>
@@ -83,7 +82,6 @@ You should have received a copy of the GNU Lesser General Public License along w
             <artifactId>itw-gm-own-cl</artifactId>
             <version>${V.com.braintribe.gm}</version>
         </dependency>
-      
         <!-- zarathud -->
         <dependency>
             <groupId>com.braintribe.devrock.zarathud</groupId>
@@ -115,10 +113,15 @@ You should have received a copy of the GNU Lesser General Public License along w
             <artifactId>zarathud-ui-model</artifactId>
             <version>${V.com.braintribe.devrock.zarathud}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.braintribe.velocity</groupId>
             <artifactId>velocity-template-renderer</artifactId>
             <version>${V.com.braintribe.velocity}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.braintribe.common</groupId>
+            <artifactId>platform-api</artifactId>
+            <version>${V.com.braintribe.common}</version>
         </dependency>
     </dependencies>
 </project>

@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.braintribe.common.WeakClosing;
 import com.braintribe.common.lcd.Pair;
 import com.braintribe.devrock.api.logging.LoggingCommons;
 import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
@@ -105,6 +106,9 @@ public class DevrockPlugin extends AbstractUIPlugin implements McBridge,
 	
 	private List<PreferencesChangeListener> preferencesChangeListeners = new ArrayList<>();
 	
+	private WeakClosing weakClosing;
+	
+	
 	public static DevrockPlugin instance() {
 		return instance;
 	}
@@ -122,6 +126,8 @@ public class DevrockPlugin extends AbstractUIPlugin implements McBridge,
 		//
 		// direct initialization tasks here
 		//
+		
+		weakClosing = new WeakClosing();
 		
 		//activate scoping bridge 
 		mcBridge = new ScopingMcBridge( InternalMcBridge::new);
@@ -172,11 +178,14 @@ public class DevrockPlugin extends AbstractUIPlugin implements McBridge,
 		// de-initialization tasks here
 		quickImportControl.stop();
 		repoImportControl.stop();
+		
 
 		storageLocker().save();
 
 		// calls context.close in bridge.. is that graceful? should we call it here now?
 		close();
+		
+		weakClosing.close();
 		
 		uiSupport.dispose();
 		
@@ -259,6 +268,11 @@ public class DevrockPlugin extends AbstractUIPlugin implements McBridge,
 	public boolean isWorkspaceDirty() {
 		return projectView.dirtied();
 	}
+	
+	public WeakClosing weakClosingController() {
+		return weakClosing;
+	}
+	
 	
 	/*
 	 * 
