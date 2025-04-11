@@ -58,11 +58,23 @@ public class AdvancedResourceChangeListener  implements IResourceChangeListener 
 			return;
 		}			
 		
-		// post change only to trigger?
+		// pre-build : Eclipse will start a build -> inhibit updater 
+		if (event.getType() == IResourceChangeEvent.PRE_BUILD) {
+			ArtifactContainerPlugin.instance().projectUpdater().acknowledgeInhibitedByEclipseBuild(true);
+			return;
+		}
+		// post-build : Eclipse has stopped its build -> re-activate updater 
+		if (event.getType() == IResourceChangeEvent.POST_BUILD) {
+			ArtifactContainerPlugin.instance().projectUpdater().acknowledgeInhibitedByEclipseBuild(false);
+			return;
+		}
 		
+		// post change only to trigger?		
 		if (event.getType() != IResourceChangeEvent.POST_CHANGE) {
 			return;
 		}
+		
+		
 				
 		// if a pom has been changed - notified by the resource visitor, directly update it 
 		if (projectToBuild != null) {

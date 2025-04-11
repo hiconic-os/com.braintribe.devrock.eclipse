@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import org.eclipse.core.resources.IProject;
 
 import com.braintribe.cfg.DestructionAware;
+import com.braintribe.devrock.api.storagelocker.StorageLocker;
+import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
 import com.braintribe.devrock.plugin.DevrockPlugin;
 import com.braintribe.logging.Logger;
 
@@ -41,9 +43,12 @@ public class DeferredProjectUpdater implements DestructionAware {
 	
 	private Object monitor = new Object();
 	
-	private long currentStamp;
+	private long currentStamp;	
 	
-	private long delta = 2000;
+	private boolean blockedViaEclipseBuild = false;
+	
+	private DevrockPlugin plugin = DevrockPlugin.instance();
+	private StorageLocker locker = plugin.storageLocker();
 	
 	
 	public DeferredProjectUpdater() {
@@ -55,7 +60,11 @@ public class DeferredProjectUpdater implements DestructionAware {
 	}
 	
 	private void clearProjects( boolean cleared) {
-		projectsToUpdate.clear();
+		projectsToUpdate.clear();		
+	}
+	
+	private long getDelta() {
+		return locker.getValue( StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER_DELAY, 2000);
 	}
 	
 	/**
@@ -70,7 +79,16 @@ public class DeferredProjectUpdater implements DestructionAware {
 			log.debug("Updated from [" + oldStamp + "] to [" + currentStamp + "] to: " + project.getName());
 		}
 	}
+
 	
+	/**
+	 * signalled by the event listener that Eclipse has started/ended a build
+	 * @param buildInhibited
+	 */
+	public void acknowledgeInhibitedByEclipseBuild( boolean buildInhibited) {
+		blockedViaEclipseBuild = buildInhibited;
+		
+	}
 	/**
 	 * @param projects - adds all passed projects and resets the timestamp
 	 */
@@ -101,12 +119,12 @@ public class DeferredProjectUpdater implements DestructionAware {
 		public void run() {
 			while (!Thread.interrupted()) {
 				try {
-					Thread.sleep( delta / 2);
+					Thread.sleep( getDelta() / 2);
 					synchronized (monitor) {
 						Set<IProject> prjs = supplier.get();
-						if (!prjs.isEmpty()) {
+						if (!prjs.isEmpty() && !blockedViaEclipseBuild) {
 							long time = System.currentTimeMillis();
-							if ((time - currentStamp) > delta) {
+							if ((time - currentStamp) > getDelta()) {
 								DevrockPlugin.instance().forceRefreshOnProjectView();
 								
 								DevrockPlugin.mcBridge().close();

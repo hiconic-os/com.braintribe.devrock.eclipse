@@ -46,6 +46,7 @@ public interface StorageLockerSlots {
 	String SLOT_AUTO_UPDATE_WS = "auto-update-workspace";
 	String SLOT_AUTO_UPDATE_DEPENDERS = "auto-update-dependers";
 	String SLOT_ADVANCED_RC_LISTENER = "advanced-resourcechange-listener";
+	String SLOT_ADVANCED_RC_LISTENER_DELAY = "deferred-updater-delay";
 	
 	String SLOT_SELECTIVE_WS_SYNCH = "selective-ws-synch";	
 	String SLOT_AC_DEBUG_EVENT_LOGGING ="ac-debug-event-logging";
@@ -145,5 +146,6 @@ public interface StorageLockerSlots {
 	String SLOT_GF_FAKE_UPLOAD_TARGET = "gf-faked-upload-target";
 	String SLOT_GF_FAKE_UPLOAD_ERRORS = "gf-faked-upload-errors";
 	String SLOT_GF_LAST_TARGET_REPO = "gf-last-target-repo";
+	
 	
 }

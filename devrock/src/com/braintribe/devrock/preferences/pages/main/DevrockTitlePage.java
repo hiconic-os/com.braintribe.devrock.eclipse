@@ -55,6 +55,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 	private BooleanEditor selectiveWorkspaceUpdate;	
 	private BooleanEditor requireHigherVersionInFlexibleAssignment;
 	private IntegerEditor maxResultInRemoteDependencyImport;
+	private IntegerEditor deferredDependerUpaterDelay;
 
 	private BooleanEditor modelBuilderMessages;
 
@@ -108,9 +109,11 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 				Boolean selection = activateAutoWorkspaceUpdate.getSelection();
 				if (Boolean.FALSE.equals(selection)) {
 					activateDependerUpdate.setEnabled( false);
+					deferredDependerUpaterDelay.setEnabled( false);
 				}
 				else {
 					activateDependerUpdate.setEnabled( true);
+					deferredDependerUpaterDelay.setEnabled(true);					
 				}
 			}
 			
@@ -120,6 +123,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		boolean autoUpdate = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_AUTO_UPDATE_WS, true);
 		activateAutoWorkspaceUpdate.setSelection( autoUpdate);
 		
+		// advanced resource change listener 
 		activateDependerUpdate = new BooleanEditor();
 		activateDependerUpdate.setLabelToolTip( "Changes the behavior of the activated workspace resource change listener to build only affected projects");
 		activateDependerUpdate.setEditToolTip( "If checked, the containers will react to changes of the dependers of changed projects in the workspace, otherwise the standard automatic behavior is used");
@@ -131,7 +135,21 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 			activateDependerUpdate.setEnabled(false);
 		}
 		
+		// advanced resource change listener delta
+		deferredDependerUpaterDelay = new IntegerEditor();
+		deferredDependerUpaterDelay.setLabelToolTip( "Determines the delay in milliseconds before AC starts its reaction after an Eclipse event");
+		deferredDependerUpaterDelay.setEditToolTip( "Enter the number of milliseconds to set the delay");
+		control = deferredDependerUpaterDelay.createControl(choicesComposite, "Delay for the dependency updater's reaction");
+		control.setLayoutData(new GridData( SWT.FILL, SWT.CENTER, true, false, 4, 1));
+		Integer deferredDepUpdaterDelayValue = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER_DELAY, 2000);
+		deferredDependerUpaterDelay.setSelection( deferredDepUpdaterDelayValue);
+		if (!autoUpdate) {
+			deferredDependerUpaterDelay.setEnabled(false);
+		}
 		
+
+		
+		// selective workspace feature 
 		selectiveWorkspaceUpdate = new BooleanEditor();
 		selectiveWorkspaceUpdate.setLabelToolTip("Changes the behavior of the default workspace sync");
 		selectiveWorkspaceUpdate.setEditToolTip( "If checked and projects are selected, it will sync these. Otherwise it will sync the workspace");
@@ -140,8 +158,7 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 		boolean selectivity = DevrockPlugin.envBridge().storageLocker().getValue( StorageLockerSlots.SLOT_SELECTIVE_WS_SYNCH, false);
 		selectiveWorkspaceUpdate.setSelection( selectivity);
 		
-		//requireHigherVersionInFlexibleAssignment
-		
+		//requireHigherVersionInFlexibleAssignment feature		
 		requireHigherVersionInFlexibleAssignment = new BooleanEditor();
 		requireHigherVersionInFlexibleAssignment.setLabelToolTip("Changes how non-matching projects of dependencies in debug-module projects are handled");
 		requireHigherVersionInFlexibleAssignment.setEditToolTip( "If checked, the project must have at least the same version as requested. Otherwise it only has to match a derived standard range");
@@ -249,6 +266,9 @@ public class DevrockTitlePage extends PreferencePage implements IWorkbenchPrefer
 			boolean activateAutoDependerUpdate = activateDependerUpdate.getSelection();
 			storageLocker.setValue(StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER, activateAutoDependerUpdate);
 		}
+			
+		storageLocker.setValue(StorageLockerSlots.SLOT_ADVANCED_RC_LISTENER_DELAY, deferredDependerUpaterDelay.getSelection());
+	
 		
 		boolean selectiveUpdate = selectiveWorkspaceUpdate.getSelection();
 		storageLocker.setValue(StorageLockerSlots.SLOT_SELECTIVE_WS_SYNCH, selectiveUpdate);
