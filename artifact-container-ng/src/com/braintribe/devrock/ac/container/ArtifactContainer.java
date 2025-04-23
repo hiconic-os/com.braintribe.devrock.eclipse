@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -46,6 +50,7 @@ import com.braintribe.devrock.ac.container.tomcat.ArtifactContainerDevloaderUpda
 import com.braintribe.devrock.ac.container.updater.ProjectUpdater.Mode;
 import com.braintribe.devrock.api.nature.CommonNatureIds;
 import com.braintribe.devrock.api.nature.NatureHelper;
+import com.braintribe.devrock.api.storagelocker.StorageLockerSlots;
 import com.braintribe.devrock.bridge.eclipse.workspace.WorkspaceProjectInfo;
 import com.braintribe.devrock.bridge.eclipse.workspace.WorkspaceProjectView;
 import com.braintribe.devrock.mc.api.classpath.ClasspathResolutionScope;
@@ -598,7 +603,11 @@ public class ArtifactContainer implements IClasspathContainer {
 		IClasspathAttribute solutionTag = JavaCore.newClasspathAttribute("artifact", analyisArtifact.asString());
 		IProject project = projectInfo.getProject();
 		IClasspathEntry entry = JavaCore.newProjectEntry( project.getFullPath(),  new IAccessRule[0],  false,  new IClasspathAttribute[] { solutionTag},  false);
-		result.add( entry);
+		result.add( entry); 
+		
+		// if there's a class-gen folder, create a entry on the folder
+		List<IClasspathEntry> list = generateEntriesForArtifactReflection( project);
+		result.addAll( list);
 	
 		if (isGwtArtifact) {
 			result.addAll( generateEntriesForProjectSourceReference(analyisArtifact, projectInfo));
@@ -607,6 +616,44 @@ public class ArtifactContainer implements IClasspathContainer {
 		return result;				
 	}
 	
+	/**
+	 * create a folder classpath reference for the class-gen folder. 
+	 * @param project
+	 * @return
+	 */
+	private List<IClasspathEntry> generateEntriesForArtifactReflection(IProject project) {
+		
+		IJavaProject javaProject;
+		try {
+			javaProject = JavaCore.create(project);
+		} catch (Exception e) {			
+			String msg = "not a valid Java project :" + project.getName();
+			ArtifactContainerStatus status = new ArtifactContainerStatus(msg, e);
+			ArtifactContainerPlugin.instance().log(status);
+			return Collections.emptyList();
+		}
+		
+		File binaryOutputFolder;
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		try {
+			binaryOutputFolder = workspace.getRoot().getFile( javaProject.getOutputLocation()).getRawLocation().toFile();
+		} catch (JavaModelException e) {
+			String msg = "cannot access binary output folder of :" + project.getName();
+			ArtifactContainerStatus status = new ArtifactContainerStatus(msg, e);
+			ArtifactContainerPlugin.instance().log(status);
+			return Collections.emptyList();
+		}	 		
+		
+		String arbOutputDirName = DevrockPlugin.instance().storageLocker().getValue(StorageLockerSlots.SLOT_ARB_OUTPUT_DIR, StorageLockerSlots.DEFAULT_ARB_OUTPUT_DIRNAME);	
+		File arbOutputFolder = new File( binaryOutputFolder.getParentFile(), arbOutputDirName);
+		if (arbOutputFolder.exists()) {
+			//
+			String path = arbOutputFolder.getAbsolutePath();
+			IClasspathEntry folder_entry = JavaCore.newLibraryEntry( new Path( path), new Path( path), null, new IAccessRule[0], new IClasspathAttribute[0], false);
+			return Collections.singletonList( folder_entry);
+		}
+		return Collections.emptyList();
+	}
 	/**
 	 * generate a standalone source reference (for GWT terminals)
 	 * @param projectInfo  - the associated {@link WorkspaceProjectInfo}
