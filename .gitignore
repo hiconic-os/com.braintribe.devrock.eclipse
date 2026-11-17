@@ -6,3 +6,7 @@
 **/ehthumbs.db
 **/Thumbs.db
 .gradle
+
+# Deployment tool dependencies
+tools/deployment/node_modules/
+tools/__pycache__/

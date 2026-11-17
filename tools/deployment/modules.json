@@ -1,0 +1,65 @@
+[
+  {
+    "folder": "devrock",
+    "bundle": "devrock.eclipse.main",
+    "feature": "devrock.eclipse.feature.devrock",
+    "featureVersion": "1.0.0",
+    "baselineFeatureVersion": "1.0.0.202511041125",
+    "prepareWithAnt": true,
+    "manifest": "res-dev/MANIFEST.MF"
+  },
+  {
+    "folder": "artifact-container-ng",
+    "bundle": "devrock.eclipse.artifact.container",
+    "feature": "devrock.eclipse.feature.artifact.container",
+    "featureVersion": "4.0.0",
+    "baselineFeatureVersion": "4.0.0.202511041124",
+    "prepareWithAnt": true,
+    "manifest": "res-dev/MANIFEST.MF"
+  },
+  {
+    "folder": "model-nature-ng",
+    "bundle": "devrock.eclipse.model-nature",
+    "feature": "devrock.eclipse.feature.model.nature.builder",
+    "featureVersion": "4.0.0",
+    "baselineFeatureVersion": "4.0.0.202511041125",
+    "prepareWithAnt": true,
+    "manifest": "res-dev/MANIFEST.MF"
+  },
+  {
+    "folder": "debug-module-nature-ng",
+    "bundle": "devrock.eclipse.debug-module-nature",
+    "feature": "devrock.eclipse.feature.debug.module.nature.builder",
+    "featureVersion": "1.0.0",
+    "baselineFeatureVersion": "1.0.0.202511041125",
+    "prepareWithAnt": true,
+    "manifest": "res-dev/MANIFEST.MF"
+  },
+  {
+    "folder": "artifact-reflection-builder",
+    "bundle": "devrock.eclipse.artifact-reflection-builder",
+    "feature": "devrock.eclipse.feature.artifact.reflection.builder",
+    "featureVersion": "1.0.1",
+    "baselineFeatureVersion": "1.0.1.202511041125",
+    "prepareWithAnt": true,
+    "manifest": "res-dev/MANIFEST.MF"
+  },
+  {
+    "folder": "mungo-jerry-ng",
+    "bundle": "devrock.eclipse.mungo-jerry",
+    "feature": "devrock.eclipse.feature.mungo.jerry",
+    "featureVersion": "4.0.0",
+    "baselineFeatureVersion": "4.0.0.202403051145",
+    "prepareWithAnt": true,
+    "manifest": "res-dev/MANIFEST.MF"
+  },
+  {
+    "folder": "file-class-path-local-java-application-launcher",
+    "bundle": "devrock.eclipse.file.classpath.launcher",
+    "feature": "devrock.eclipse.feature.file.classpath.launcher",
+    "featureVersion": "1.0.2",
+    "baselineFeatureVersion": "1.0.2.202511041125",
+    "prepareWithAnt": false,
+    "manifest": "META-INF/MANIFEST.MF"
+  }
+]

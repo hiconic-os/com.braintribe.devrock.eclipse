@@ -1,0 +1,95 @@
+name: Eclipse plugins (build, beta publish or SFTP probe)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Build only, publish a fresh release to beta, or test SFTP
+        type: choice
+        options: [build, probe, publish]
+        default: build
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: eclipse-plugin-tools
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    container: ghcr.io/hiconic-os/ci-hiconic-sdk/main:latest
+    environment: eclipse-beta
+    defaults:
+      run:
+        working-directory: git-repo
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: git-repo
+      - name: Check preinstalled SDK runtimes
+        run: |
+          node --version
+          java -version
+          javac -version
+          command -v hc
+          command -v jinni
+      - name: Install deployment tooling
+        run: npm ci --ignore-scripts --no-fund --no-audit --prefix tools/deployment
+      - name: Test upload logic
+        run: npm test --prefix tools/deployment
+      - name: Build source and verify p2 installation
+        if: inputs.mode != 'probe'
+        env:
+          DEVROCK_REPOSITORY_CONFIGURATION: ${{ github.workspace }}/git-repo/repository-configuration-ci.yaml
+          GITHUB_READ_PACKAGES_TOKEN: ${{ secrets.DEVROCK_PIPELINE_UPLOAD_PASSWORD }}
+          DEVROCK_PIPELINE_UPLOAD_USER: ${{ secrets.DEVROCK_PIPELINE_UPLOAD_USER }}
+          DEVROCK_PIPELINE_UPLOAD_PASSWORD: ${{ secrets.DEVROCK_PIPELINE_UPLOAD_PASSWORD }}
+        run: |
+          mkdir -p ../inst ../repo
+          node tools/deployment/build.mjs --work "$GITHUB_WORKSPACE/eclipse-build"
+      - name: Publish cumulative beta (explicit dispatch mode only)
+        if: inputs.mode == 'publish'
+        env:
+          ECLIPSE_FTP_HOST: ${{ vars.ECLIPSE_FTP_HOST || 'home29449762.1and1-data.host' }}
+          ECLIPSE_FTP_PORT: ${{ vars.ECLIPSE_FTP_PORT || '22' }}
+          ECLIPSE_BETA_REMOTE_DIR: ${{ vars.ECLIPSE_BETA_REMOTE_DIR || '/eclipse/beta' }}
+          ECLIPSE_BETA_PUBLIC_URL: ${{ vars.ECLIPSE_BETA_PUBLIC_URL || 'https://eclipse.hiconic.dev/beta/' }}
+          ECLIPSE_SFTP_HOST_KEY: ${{ vars.ECLIPSE_SFTP_HOST_KEY || 'd60c76c3c46dbf7c02822ec987c9b27ff29577bd9c4506e8c34dd43fc3f4f794' }}
+          ECLIPSE_FTP_USER: ${{ vars.ECLIPSE_FTP_USER || secrets.ECLIPSE_FTP_USER }}
+          ECLIPSE_FTP_PASSWORD: ${{ secrets.ECLIPSE_FTP_PASSWORD }}
+        run: |
+          node tools/deployment/sftp-publish.mjs \
+            --source "$GITHUB_WORKSPACE/eclipse-build/website" \
+            --host "$ECLIPSE_FTP_HOST" --port "$ECLIPSE_FTP_PORT" \
+            --remote-dir "$ECLIPSE_BETA_REMOTE_DIR" --host-key "$ECLIPSE_SFTP_HOST_KEY" \
+            --public-base "$ECLIPSE_BETA_PUBLIC_URL" --apply
+      - name: SFTP upload, rename, download and optional public HTTPS verification
+        if: inputs.mode == 'probe'
+        env:
+          ECLIPSE_FTP_HOST: ${{ vars.ECLIPSE_FTP_HOST || 'home29449762.1and1-data.host' }}
+          ECLIPSE_FTP_PORT: ${{ vars.ECLIPSE_FTP_PORT || '22' }}
+          ECLIPSE_FTP_REMOTE_DIR: ${{ vars.ECLIPSE_FTP_REMOTE_DIR || '/eclipse/test' }}
+          ECLIPSE_PUBLIC_BASE_URL: ${{ vars.ECLIPSE_PUBLIC_BASE_URL || 'https://eclipse.hiconic.dev/test/' }}
+          ECLIPSE_SFTP_HOST_KEY: ${{ vars.ECLIPSE_SFTP_HOST_KEY || 'd60c76c3c46dbf7c02822ec987c9b27ff29577bd9c4506e8c34dd43fc3f4f794' }}
+          ECLIPSE_FTP_USER: ${{ vars.ECLIPSE_FTP_USER || secrets.ECLIPSE_FTP_USER }}
+          ECLIPSE_FTP_PASSWORD: ${{ secrets.ECLIPSE_FTP_PASSWORD }}
+        run: |
+          node tools/deployment/sftp-probe.mjs \
+            --host "$ECLIPSE_FTP_HOST" --port "$ECLIPSE_FTP_PORT" \
+            --remote-dir "$ECLIPSE_FTP_REMOTE_DIR" --public-base "$ECLIPSE_PUBLIC_BASE_URL" \
+            --host-key "$ECLIPSE_SFTP_HOST_KEY"
+      - uses: actions/upload-artifact@v7
+        if: always() && inputs.mode != 'probe'
+        with:
+          name: eclipse-p2-${{ github.run_number }}
+          path: |
+            eclipse-build/build/site/
+            eclipse-build/build/build-report.json
+            eclipse-build/build/logs/
+            eclipse-build/bootstrap-logs/
+            eclipse-build/ci-build.json
+            eclipse-build/website/
+          if-no-files-found: warn

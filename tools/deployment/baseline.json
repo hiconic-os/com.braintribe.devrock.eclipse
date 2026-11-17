@@ -1,0 +1,16 @@
+{
+  "sdkUrl": "https://download.eclipse.org/eclipse/downloads/drops4/R-4.40-202606010713/eclipse-SDK-4.40-linux-gtk-x86_64.tar.gz",
+  "sdkSha512": "f8c6853fef69d4feed988bb5a36b7d6479768daee0e9ca6732fdd0d1e9ec07fbcd03471b5c007d693ccabbef151d5a1f3908f60c02cfecac7645e4c8671750b3",
+  "baselineSite": "https://eclipse.hiconic.dev/beta/",
+  "roots": [
+    "devrock.eclipse.feature.devrock.feature.group/1.0.0.202511041125",
+    "devrock.eclipse.feature.artifact.container.feature.group/4.0.0.202511041124",
+    "devrock.eclipse.feature.model.nature.builder.feature.group/4.0.0.202511041125",
+    "devrock.eclipse.feature.debug.module.nature.builder.feature.group/1.0.0.202511041125",
+    "devrock.eclipse.feature.artifact.reflection.builder.feature.group/1.0.1.202511041125",
+    "devrock.eclipse.feature.mungo.jerry.feature.group/4.0.0.202403051145",
+    "devrock.eclipse.feature.file.classpath.launcher.feature.group/1.0.2.202511041125"
+  ],
+  "vendorDirectory": "tools/vendor/eclipse-4.40",
+  "vendorManifestSha256": "cafa6e27b4ce8765a00222cfa3fd4e4156bc6040721c20c97e78537c4cd1e8c0"
+}

@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.SWT;
-import org.stringtemplate.v4.compiler.STParser.mapExpr_return;
 
 import com.braintribe.cfg.Configurable;
 import com.braintribe.cfg.Required;
@@ -188,7 +187,7 @@ public class StyledStringReasonStyler {
 	}
 
 	/**
-	 * @return - a {@link mapExpr_return} of style-id (from {@link ReasonStyler} and the actual styler
+	 * @return - a map of style-id (from {@link ReasonStyler} and the actual styler
 	 */
 	private Map<String,String> buildStyleMap() {
 		Map<String,String> map = new HashMap<>();

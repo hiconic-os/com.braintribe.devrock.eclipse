@@ -1,0 +1,30 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtemp,writeFile,mkdir,readFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join,posix} from 'node:path';
+import {createHash} from 'node:crypto';
+import {publish} from './sftp-publish.mjs';
+const hash=x=>createHash('sha256').update(x).digest('hex');
+async function fixture(){
+ const source=await mkdtemp(join(tmpdir(),'p2-publish-'));await mkdir(join(source,'plugins'));
+ const old={'artifacts.jar':'old artifacts','content.jar':'old content','site.xml':'old site','index.html':'old html'},next={'plugins/b_1.jar':'new binary','artifacts.jar':'old artifacts + new','content.jar':'old content + new','site.xml':'all versions','index.html':'all versions html'};
+ for(const [path,bytes] of Object.entries(next))await writeFile(join(source,path),bytes);
+ const descriptor=path=>({path,sha256:hash(next[path]),size:Buffer.byteLength(next[path])});
+ const plan={retainedPayloads:['plugins/legacy_1.jar'],qualifier:'20261117000000',previousMetadata:Object.fromEntries(['artifacts.jar','content.jar'].map(n=>[n,hash(old[n])])),payloadsFirst:[descriptor('plugins/b_1.jar')],metadataLast:['artifacts.jar','content.jar','site.xml','index.html'].map(descriptor)};
+ await writeFile(join(source,'publication-plan.json'),JSON.stringify(plan));
+ const files=new Map(Object.entries(old).map(([n,v])=>['/beta/'+n,Buffer.from(v)]));files.set('/beta/plugins/legacy_1.jar',Buffer.from('legacy immutable'));
+ const events=[],fail={content:false};
+ const client={async exists(p){if(p==='/beta')return 'd';return files.has(p)?'-':false;},async get(p){if(!files.has(p))throw new Error('Missing file '+p);return files.get(p);},async mkdir(){events.push('mkdir');},async put(data,p,options){if(options?.writeStreamOptions?.flags==='wx'&&files.has(p))throw new Error('Locked');files.set(p,Buffer.isBuffer(data)?Buffer.from(data):await readFile(data));events.push('put:'+p);},async rename(a,b){if(files.has(b))throw new Error('Exists');files.set(b,files.get(a));files.delete(a);events.push('rename:'+b);},async posixRename(a,b){if(fail.content&&b==='/beta/content.jar')throw new Error('Injected activation failure');files.set(b,files.get(a));files.delete(a);events.push('activate:'+b);},async delete(p){files.delete(p);events.push('delete:'+p);}};
+ return {source,files,events,client,fail,old,next,cleanup:()=>rm(source,{recursive:true,force:true})};
+}
+test('dry run reads the fence and performs no mutations',async()=>{const s=await fixture();try{const r=await publish(s.client,{source:s.source,root:'/beta'});assert.equal(r.applied,false);assert.deepEqual(s.events,[]);}finally{await s.cleanup();}});
+test('foreign metadata change blocks publication before writing',async()=>{const s=await fixture();try{s.files.set('/beta/content.jar',Buffer.from('foreign publisher'));await assert.rejects(()=>publish(s.client,{source:s.source,root:'/beta',apply:true}),/Server metadata changed/);assert.deepEqual(s.events,[]);}finally{await s.cleanup();}});
+test('publish preserves old payloads, backs up metadata and activates artifacts before content',async()=>{const s=await fixture();try{await publish(s.client,{source:s.source,root:'/beta',apply:true});assert.equal(s.files.get('/beta/plugins/legacy_1.jar').toString(),'legacy immutable');assert.equal(s.files.get('/beta/_publication-history/20261117000000/content.jar').toString(),s.old['content.jar']);assert.ok(s.events.indexOf('rename:/beta/plugins/b_1.jar')<s.events.indexOf('activate:/beta/artifacts.jar'));assert.ok(s.events.indexOf('activate:/beta/artifacts.jar')<s.events.indexOf('activate:/beta/content.jar'));assert.equal(s.files.has('/beta/.p2-publication.lock'),false);assert.equal([...s.files.keys()].some(p=>p.endsWith('.uploading')),false);}finally{await s.cleanup();}});
+test('payload collision never overwrites immutable bytes or activates metadata',async()=>{const s=await fixture();try{s.files.set('/beta/plugins/b_1.jar',Buffer.from('other binary'));await assert.rejects(()=>publish(s.client,{source:s.source,root:'/beta',apply:true}),/Immutable server payload differs/);assert.equal(s.files.get('/beta/plugins/b_1.jar').toString(),'other binary');assert.equal(s.files.get('/beta/content.jar').toString(),s.old['content.jar']);assert.equal(s.events.some(e=>e.startsWith('activate:')),false);}finally{await s.cleanup();}});
+test('activation failure leaves the old content inventory and legacy payloads available',async()=>{const s=await fixture();try{s.fail.content=true;await assert.rejects(()=>publish(s.client,{source:s.source,root:'/beta',apply:true}),/activation failure/);assert.equal(s.files.get('/beta/content.jar').toString(),s.old['content.jar']);assert.equal(s.files.get('/beta/artifacts.jar').toString(),s.next['artifacts.jar']);assert.equal(s.files.get('/beta/plugins/legacy_1.jar').toString(),'legacy immutable');assert.equal(s.files.has('/beta/.p2-publication.lock'),false);}finally{await s.cleanup();}});
+test('another publisher lock is never overwritten or removed',async()=>{const s=await fixture();try{s.files.set('/beta/.p2-publication.lock',Buffer.from('other owner'));await assert.rejects(()=>publish(s.client,{source:s.source,root:'/beta',apply:true}),/Locked/);assert.equal(s.files.get('/beta/.p2-publication.lock').toString(),'other owner');}finally{await s.cleanup();}});
+
+test('a metadata-only remote mirror is rejected before writes',async()=>{const s=await fixture();try{s.files.delete('/beta/plugins/legacy_1.jar');await assert.rejects(()=>publish(s.client,{source:s.source,root:'/beta',apply:true}),/Legacy payload missing/);assert.deepEqual(s.events,[]);}finally{await s.cleanup();}});
+
+test('the public URL is checked against the exact committed metadata bytes',async()=>{const s=await fixture();try{let reads=0;await publish(s.client,{source:s.source,root:'/beta',apply:true,publicBase:'https://example.org/beta/',fetcher:async url=>{reads++;assert.equal(url.searchParams.get('deployment'),'20261117000000');return new Response(s.files.get(url.pathname));}});assert.equal(reads,4);}finally{await s.cleanup();}});
