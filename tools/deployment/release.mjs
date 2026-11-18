@@ -1,3 +1,4 @@
+import {testScanners} from './scanner-test.mjs';
 import {readFile,writeFile,mkdir,readdir} from 'node:fs/promises';
 import {join,resolve,dirname,basename,relative,delimiter} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -85,6 +86,8 @@ export async function release({eclipse,output,dependenciesFrom,published,buildQu
  if(!launchers.length)launchers=(await files(dirname(bundles.get('org.eclipse.osgi').path))).filter(p=>dirname(p)===dirname(bundles.get('org.eclipse.osgi').path)&&basename(p).startsWith('org.eclipse.equinox.launcher_')&&p.endsWith('.jar'));
  if(launchers.length!==1)throw new Error('Expected exactly one Equinox launcher');
  report.publisher={launcher:launchers[0],configuration:config,workspace:join(output,'workspace')};
+ console.log('Test scanner completion for unavailable directories');
+ await testScanners(output);
  const common=publisherCommand(report),site=join(output,'site');await mkdir(site);console.log('Publish local p2 metadata');
  await run('java',[...common,'-application','org.eclipse.equinox.p2.publisher.FeaturesAndBundlesPublisher','-source',stage,'-metadataRepository',uri(site),'-artifactRepository',uri(site),'-compress','-publishArtifacts'],join(logs,'p2-publish.log'));
  const category=document('site'),categoryRoot=category.documentElement;append(categoryRoot,'category-def',{name:'devrock',label:'Devrock development tools'});

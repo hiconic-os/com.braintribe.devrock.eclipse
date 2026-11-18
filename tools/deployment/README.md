@@ -94,3 +94,16 @@ Both variants use the existing `eclipse-beta` credentials. Optional variables
 `ECLIPSE_BETA_2_REMOTE_DIR` and `ECLIPSE_BETA_2_PUBLIC_URL` override the test paths;
 existing `ECLIPSE_BETA_*` overrides apply only to beta. Locally pass
 `--published-site https://eclipse.hiconic.dev/beta-2/` to `build.mjs`.
+
+## Scanner regression check
+
+Every plugin build also compiles and runs `tools/tests/ScannerDirectoryListingTest.java`
+against the real compiled source and local-metadata scanners. It covers missing roots,
+regular-file roots, null directory listings, healthy siblings beside unavailable
+subdirectories, and job completion after a worker exception. Each scan has a timeout
+so the previous hang fails the build. Results are written to `build/logs/scanner-test.log`.
+To rerun against an existing build:
+
+```sh
+node tools/deployment/scanner-test.mjs --build /absolute/path/eclipse-build/build
+```

@@ -160,11 +160,18 @@ public class SourceScanner {
 
 			submittedJobs.incrementAndGet();
 			executorService.submit(() -> {
-				for (File subDir : dir.listFiles(File::isDirectory))
-					findAllPomsInParallel(subDir);
-
-				if (submittedJobs.decrementAndGet() == 0)
-					cdl.countDown();
+				try {
+					File[] subDirectories = dir.listFiles(File::isDirectory);
+					if (subDirectories == null) {
+						log.warn("Cannot list scan directory [" + dir.getAbsolutePath() + "]; skipping it.");
+						return;
+					}
+					for (File subDir : subDirectories)
+						findAllPomsInParallel(subDir);
+				} finally {
+					if (submittedJobs.decrementAndGet() == 0)
+						cdl.countDown();
+				}
 			});
 
 		}
