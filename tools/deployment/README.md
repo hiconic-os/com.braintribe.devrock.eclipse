@@ -83,3 +83,14 @@ cover pinning, cleanup, version collisions, locks and publication failure handli
 The real IONOS SFTP/HTTPS probe and a read-only production publication check also
 succeeded. These checks do not replace functional IDE/workspace tests of resolver
 behavior. The GitHub workflow and production publication have not yet been run.
+
+## Select beta or beta-2
+
+The workflow input `variant` selects `beta-2` (default) or `beta`. Both the
+metadata snapshot and the SFTP destination use the selected site. For the first
+isolated test, finish copying the entire beta folder to beta-2, then choose
+`mode=publish`, `variant=beta-2`. The probe mode still uses `/eclipse/test`.
+Both variants use the existing `eclipse-beta` credentials. Optional variables
+`ECLIPSE_BETA_2_REMOTE_DIR` and `ECLIPSE_BETA_2_PUBLIC_URL` override the test paths;
+existing `ECLIPSE_BETA_*` overrides apply only to beta. Locally pass
+`--published-site https://eclipse.hiconic.dev/beta-2/` to `build.mjs`.

@@ -18,12 +18,16 @@ async function run(command,args,log,cwd=repo){
  const code=await new Promise((ok,bad)=>{child.once('error',bad);child.once('close',ok);});await new Promise(ok=>out.end(ok));
  if(code!==0)throw new Error(`${command} failed (${code}); inspect ${log}`);
 }
-export async function build({work,baseline,refresh=true,hc='hc'}){
+export async function build({work,baseline,refresh=true,hc='hc',publishedSite}){
  work=resolve(work);await mkdir(work,{recursive:true});const lock=JSON.parse(await readFile(join(tools,'deployment/baseline.json'),'utf8'));
+ const site=new URL(publishedSite??lock.baselineSite);
+ if(site.protocol!=='https:'||site.username||site.password||site.search||site.hash)throw new Error('Published site must be a plain HTTPS directory URL');
+ if(!site.pathname.endsWith('/'))site.pathname+='/';
+ console.log('Published site snapshot: '+site.href);
  const logs=join(work,'bootstrap-logs');await mkdir(logs,{recursive:true});
  const published=join(work,'published');await mkdir(published,{recursive:true});
  for(const name of ['content.jar','artifacts.jar']){
-  const response=await fetch(new URL(name,lock.baselineSite),{signal:AbortSignal.timeout(30_000)});
+  const response=await fetch(new URL(name,site),{signal:AbortSignal.timeout(30_000)});
   if(!response.ok)throw new Error('Cannot snapshot current site metadata: '+name);
   await writeFile(join(published,name),Buffer.from(await response.arrayBuffer()));
  }
@@ -56,12 +60,12 @@ export async function build({work,baseline,refresh=true,hc='hc'}){
  console.log('Build plugin source, publish p2 metadata and install into an isolated smoke profile.');
  await release({eclipse:baseline,output,dependenciesFrom:prepared,published,buildQualifier});
  await prepareWebsite({build:output,previous:published,output:join(work,'website')});
- await writeFile(join(work,'ci-build.json'),JSON.stringify({baseline,dependencies:prepared??'baseline',site:join(output,'site')},null,2)+'\n');
+ await writeFile(join(work,'ci-build.json'),JSON.stringify({baseline,publishedSite:site.href,dependencies:prepared??'baseline',site:join(output,'site')},null,2)+'\n');
  console.log('Verified p2 site: '+join(output,'site'));
  return output;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
- const {values}=parseArgs({options:{work:{type:'string'},baseline:{type:'string'},'baseline-dependencies':{type:'boolean',default:false},hc:{type:'string',default:'hc'}}});
+ const {values}=parseArgs({options:{'published-site':{type:'string'},work:{type:'string'},baseline:{type:'string'},'baseline-dependencies':{type:'boolean',default:false},hc:{type:'string',default:'hc'}}});
  if(!values.work)throw new Error('--work is required');
- build({work:values.work,baseline:values.baseline,refresh:!values['baseline-dependencies'],hc:values.hc}).catch(error=>{console.error(error.message);process.exitCode=1;});
+ build({work:values.work,baseline:values.baseline,publishedSite:values['published-site'],refresh:!values['baseline-dependencies'],hc:values.hc}).catch(error=>{console.error(error.message);process.exitCode=1;});
 }
